@@ -1,0 +1,2132 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>주사위 수학 놀이터</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --scale:1;
+  --bg:#f4f5fb; --surface:#fff; --surface-2:#f6f7fc; --ink:#1b1f3b; --muted:#6a7093; --line:#e3e6f1;
+  --primary:#5b5bf0; --primary-2:#8a5cf6; --primary-soft:#ecebff;
+  --coral:#ff6b5a; --mint:#18b89a; --sun:#f5a524; --pink:#e85d9e; --sky:#3a9be8;
+  --ok:#14a56f; --no:#e5484d;
+  --radius:24px;
+  --shadow:0 1px 2px rgba(27,31,59,.05),0 10px 30px rgba(27,31,59,.07);
+  --shadow-lg:0 30px 80px rgba(27,31,59,.25);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{font-size:calc(17px * var(--scale));-webkit-text-size-adjust:100%}
+body{margin:0;font-family:'Noto Sans KR',system-ui,-apple-system,'Malgun Gothic',sans-serif;color:var(--ink);background:var(--bg);
+  background-image:radial-gradient(1100px 600px at 0% -10%,#e5e3ff 0,transparent 60%),radial-gradient(900px 520px at 100% 0%,#ffe6e0 0,transparent 55%),radial-gradient(900px 600px at 50% 110%,#dff6ef 0,transparent 60%);
+  background-attachment:fixed;min-height:100vh;line-height:1.5}
+.display{font-family:'Jua','Noto Sans KR',sans-serif;font-weight:400;letter-spacing:.01em}
+.muted{color:var(--muted)} .sm{font-size:.85rem}
+button{font:inherit;color:inherit}
+h1,h2,h3{margin:0}
+
+/* ---------- header ---------- */
+header.top{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;padding:.65rem 1.4rem;
+  background:rgba(255,255,255,.75);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:.6rem;font-size:1.35rem;cursor:pointer;white-space:nowrap}
+.brand .logo{width:2.3rem;height:2.3rem;border-radius:12px;display:grid;place-items:center;color:#fff;font-size:1.2rem;
+  background:linear-gradient(135deg,var(--primary),var(--primary-2));box-shadow:0 6px 16px rgba(91,91,240,.35)}
+nav.tabs{display:flex;gap:.25rem;background:var(--surface-2);padding:.3rem;border-radius:999px;border:1px solid var(--line);overflow-x:auto;max-width:100%}
+nav.tabs button{border:0;background:transparent;padding:.5rem 1.05rem;border-radius:999px;font-weight:700;color:var(--muted);cursor:pointer;white-space:nowrap;transition:.2s}
+nav.tabs button:hover{color:var(--ink)}
+nav.tabs button.active{background:var(--surface);color:var(--primary);box-shadow:0 2px 10px rgba(27,31,59,.1)}
+.tools{margin-left:auto;display:flex;gap:.45rem;align-items:center}
+.zoom{display:flex;align-items:center;border:1px solid var(--line);border-radius:999px;background:#fff;overflow:hidden}
+.zoom button{border:0;background:transparent;padding:.45rem .75rem;cursor:pointer;font-weight:900}
+.zoom button:hover{background:var(--surface-2)}
+.zoom span{min-width:3.4rem;text-align:center;font-weight:700;font-size:.85rem;color:var(--muted)}
+.icon-btn{width:2.5rem;height:2.5rem;border-radius:50%;border:1px solid var(--line);background:#fff;cursor:pointer;display:grid;place-items:center;font-size:1.05rem;transition:.15s}
+.icon-btn:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
+.icon-btn.off{opacity:.45}
+
+main{max-width:1320px;margin:0 auto;padding:1.6rem 1.4rem 4rem}
+.view{display:none}
+.view.active{display:block;animation:fadeUp .35s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.5rem}
+.row{display:flex;gap:.7rem;flex-wrap:wrap;align-items:center}
+.row.center{justify-content:center}
+
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;border:0;border-radius:16px;padding:.8rem 1.35rem;font-weight:800;cursor:pointer;
+  transition:transform .12s,box-shadow .2s,background .2s,opacity .2s;white-space:nowrap}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:translateY(1px) scale(.98)}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;box-shadow:0 10px 22px rgba(91,91,240,.32)}
+.btn-coral{background:linear-gradient(135deg,#ff7a59,#ff4f7b);color:#fff;box-shadow:0 10px 22px rgba(255,90,100,.32)}
+.btn-mint{background:linear-gradient(135deg,#1cc6a3,#14a56f);color:#fff;box-shadow:0 10px 22px rgba(20,165,111,.3)}
+.btn-ghost{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.btn-ghost:hover{background:var(--surface-2)}
+.btn-danger{background:#fff0f0;color:var(--no);border:1px solid #ffd4d4}
+.btn.sm{padding:.45rem .8rem;border-radius:12px;font-size:.88rem}
+.btn-lg{font-size:1.1rem;padding:.95rem 1.7rem;border-radius:18px}
+.btn-xl{font-size:1.3rem;padding:1.1rem 2.2rem;border-radius:20px;font-family:'Jua',sans-serif;font-weight:400}
+.btn.block{width:100%}
+kbd{font-family:inherit;font-size:.7rem;background:rgba(255,255,255,.25);border-radius:6px;padding:.1rem .4rem;font-weight:700}
+
+/* ---------- form bits ---------- */
+.field{margin:1.3rem 0}
+.field-label{font-weight:800;margin-bottom:.6rem;display:flex;align-items:center;gap:.4rem}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem}
+.chip{border:2px solid var(--line);background:#fff;border-radius:14px;padding:.55rem 1rem;font-weight:800;cursor:pointer;transition:.15s;min-width:3rem}
+.chip:hover{border-color:#c9c9fb}
+.chip.on{border-color:var(--primary);background:var(--primary-soft);color:var(--primary)}
+.chips.ops .chip{font-size:1.4rem;font-family:'Jua';font-weight:400;min-width:5.5rem;padding:.6rem 1rem;display:flex;flex-direction:column;align-items:center;line-height:1.1}
+.chips.ops .chip small{font-size:.72rem;font-family:'Noto Sans KR';font-weight:700;color:var(--muted)}
+.stepper{display:inline-flex;align-items:center;border:2px solid var(--line);border-radius:16px;overflow:hidden;background:#fff}
+.stepper button{border:0;background:var(--surface-2);width:2.8rem;height:2.8rem;font-size:1.4rem;font-weight:900;cursor:pointer}
+.stepper button:hover{background:var(--primary-soft);color:var(--primary)}
+.stepper span{min-width:3.5rem;text-align:center;font-size:1.5rem}
+.input{width:100%;border:2px solid var(--line);border-radius:14px;padding:.7rem .9rem;font:inherit;background:#fff;outline:none;transition:.15s}
+.input:focus{border-color:var(--primary);box-shadow:0 0 0 4px var(--primary-soft)}
+.input.xl{font-size:1.5rem;padding:.8rem 1rem}
+textarea.input{resize:vertical;min-height:5rem}
+select.input{cursor:pointer}
+.switch-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.75rem 1rem;border:1px solid var(--line);border-radius:14px;margin:.5rem 0;cursor:pointer;background:var(--surface-2);font-weight:600}
+.switch-row input{position:absolute;opacity:0;pointer-events:none}
+.switch{flex:none;width:3.1rem;height:1.75rem;border-radius:999px;background:#d5d8e6;position:relative;transition:.2s}
+.switch::after{content:'';position:absolute;top:.2rem;left:.2rem;width:1.35rem;height:1.35rem;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.2);transition:.2s}
+.switch-row input:checked + .switch{background:var(--primary)}
+.switch-row input:checked + .switch::after{left:1.55rem}
+input[type=range]{width:100%;accent-color:var(--primary)}
+
+/* ---------- dice ---------- */
+.die{width:var(--ds,6rem);height:var(--ds,6rem);perspective:calc(var(--ds,6rem) * 6);position:relative;flex:none;transition:opacity .3s}
+.die .tilt{position:absolute;inset:0;transform-style:preserve-3d;transform:rotateX(-14deg) rotateY(18deg)}
+.die .cube{position:absolute;inset:0;transform-style:preserve-3d;transition:transform 1.25s cubic-bezier(.17,.84,.3,1.02)}
+.die .face{position:absolute;inset:0;border-radius:18%;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:14%;
+  background:linear-gradient(140deg,color-mix(in srgb,var(--dc) 62%,#fff) 0%,var(--dc) 72%);
+  box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.3),inset 0 -.35rem .8rem rgba(0,0,0,.14)}
+.die .f1{transform:translateZ(calc(var(--ds,6rem) / 2))}
+.die .f6{transform:rotateY(180deg) translateZ(calc(var(--ds,6rem) / 2))}
+.die .f3{transform:rotateY(90deg) translateZ(calc(var(--ds,6rem) / 2))}
+.die .f4{transform:rotateY(-90deg) translateZ(calc(var(--ds,6rem) / 2))}
+.die .f2{transform:rotateX(90deg) translateZ(calc(var(--ds,6rem) / 2))}
+.die .f5{transform:rotateX(-90deg) translateZ(calc(var(--ds,6rem) / 2))}
+.die .face i{width:76%;height:76%;margin:auto;border-radius:50%}
+.die .face i.on{background:radial-gradient(circle at 35% 30%,#fff 0,#eef0f8 60%,#d9dcea 100%);box-shadow:inset 0 .12rem .2rem rgba(0,0,0,.28)}
+.die .shadow{position:absolute;left:12%;right:12%;bottom:-16%;height:14%;border-radius:50%;background:rgba(27,31,59,.2);filter:blur(5px)}
+.die.rolling .tilt{animation:hop 1.25s ease-out}
+.die.rolling .shadow{animation:shadowHop 1.25s ease-out}
+@keyframes hop{0%{translate:0 0}22%{translate:0 -45%}48%{translate:0 0}66%{translate:0 -14%}82%{translate:0 0}100%{translate:0 0}}
+@keyframes shadowHop{0%,48%,82%,100%{transform:scale(1);opacity:1}22%{transform:scale(.55);opacity:.4}66%{transform:scale(.85)}}
+.die.idle{opacity:.38}
+.tray{display:flex;flex-wrap:wrap;justify-content:center;gap:calc(var(--ds,6rem) * .45);padding:1.2rem .5rem 1.8rem}
+.die-slot{display:flex;flex-direction:column;align-items:center;gap:1.1rem}
+.die-val{font-family:'Jua';font-size:1.2rem;color:var(--muted);min-width:2.2rem;text-align:center;background:var(--surface-2);border-radius:999px;padding:.1rem .7rem;border:1px solid var(--line)}
+.die-val.show{color:var(--ink);animation:pop .4s}
+
+/* ---------- home ---------- */
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:2rem;align-items:center;padding:2rem 0 2.5rem}
+.eyebrow{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:999px;padding:.35rem .9rem;font-weight:800;font-size:.9rem;color:var(--primary);box-shadow:var(--shadow)}
+.hero h1{font-size:3.4rem;line-height:1.15;margin:1rem 0}
+.grad{background:linear-gradient(90deg,var(--primary),var(--pink),var(--coral));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{font-size:1.15rem;color:var(--muted);margin:0 0 1.6rem;max-width:34rem}
+.hero-dice{display:flex;justify-content:center;gap:2.2rem;flex-wrap:wrap;--ds:7rem;padding:2rem 0;cursor:pointer}
+.hero-dice .die:nth-child(2){margin-top:3rem}
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:1.2rem}
+.feature{cursor:pointer;transition:.2s;position:relative;overflow:hidden}
+.feature:hover{transform:translateY(-4px);box-shadow:0 20px 40px rgba(27,31,59,.12)}
+.feature .f-ico{width:3.4rem;height:3.4rem;border-radius:18px;display:grid;place-items:center;font-size:1.7rem;margin-bottom:1rem;background:var(--fc-soft)}
+.feature h3{font-size:1.4rem;margin-bottom:.4rem}
+.feature p{margin:0;color:var(--muted)}
+.feature .go{margin-top:1rem;font-weight:800;color:var(--fc)}
+.tips{margin-top:1.4rem;display:flex;gap:.8rem;flex-wrap:wrap}
+.tip{background:#fff;border:1px dashed #cfd3e8;border-radius:14px;padding:.6rem 1rem;font-size:.9rem;color:var(--muted)}
+.tip b{color:var(--ink)}
+
+/* ---------- math ---------- */
+.setup-card{max-width:820px;margin:0 auto;padding:2rem 2.2rem}
+.setup-head h2{font-size:2.1rem}
+.setup-head p{margin:.3rem 0 0}
+.dice-preview{display:flex;gap:1rem;flex-wrap:wrap;--ds:3.4rem;padding:.6rem 0 1.2rem;min-height:5rem;align-items:center}
+.dice-preview .die{animation:pop .35s}
+.play-top{display:flex;align-items:center;gap:1.2rem;padding:.9rem 1.3rem;margin-bottom:1.2rem;flex-wrap:wrap}
+.qcount{font-size:1.9rem;color:var(--primary)}
+.qcount small{font-size:1.1rem;color:var(--muted);margin-left:.2rem}
+.dots{display:flex;gap:.35rem;flex-wrap:wrap;flex:1}
+.dots i{width:.85rem;height:.85rem;border-radius:50%;background:#e1e4f0;transition:.3s}
+.dots i.cur{background:var(--primary);box-shadow:0 0 0 4px var(--primary-soft)}
+.dots i.ok{background:var(--ok)} .dots i.no{background:var(--no)}
+.score-pill{background:#fff7e3;color:#a26a00;border:1px solid #ffe2a3;border-radius:999px;padding:.35rem 1rem;font-weight:800;font-size:1.1rem}
+.play-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(18rem,1fr);gap:1.2rem;align-items:start}
+.stage{text-align:center;min-height:30rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem}
+.expr{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.6rem;margin-top:.4rem}
+.tile{--c:var(--primary);min-width:4.6rem;height:5rem;padding:0 .8rem;border-radius:20px;display:grid;place-items:center;font-family:'Jua';font-size:3rem;
+  background:color-mix(in srgb,var(--c) 12%,#fff);color:var(--c);border:2px solid color-mix(in srgb,var(--c) 28%,#fff)}
+.tile.pop{animation:pop .4s}
+.tile.ans{--c:var(--ink);min-width:6rem;border:3px dashed #b9bdf7;background:#fff;color:var(--ink)}
+.tile.ans.empty{color:#b9bdf7}
+.tile.ans.right{--c:var(--ok);border:3px solid var(--ok);background:#e8f8f1;color:var(--ok);animation:pop .45s}
+.tile.ans.reveal{border:3px solid var(--no);background:#fff0f0;color:var(--no)}
+.op{font-family:'Jua';font-size:2.8rem;color:var(--muted);min-width:2rem}
+.feedback{min-height:2.6rem;font-family:'Jua';font-size:1.7rem}
+.feedback.ok{color:var(--ok);animation:pop .4s} .feedback.no{color:var(--no);animation:pop .4s}
+.shake{animation:shake .45s}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+@keyframes pop{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.12);opacity:1}100%{transform:scale(1)}}
+.pad-card{position:sticky;top:5.5rem}
+.manual{width:100%;max-width:44rem;background:var(--surface-2);border:1px solid var(--line);border-radius:22px;padding:1rem 1.2rem;animation:pop .3s;text-align:left}
+.manual-title{display:flex;justify-content:space-between;gap:.6rem;flex-wrap:wrap;font-weight:800;margin-bottom:.6rem}
+.mrow{display:flex;align-items:center;gap:.45rem;padding:.35rem .5rem;border-radius:14px;flex-wrap:wrap;border:2px solid transparent}
+.mrow.next{background:#fff;border-color:color-mix(in srgb,var(--dc) 40%,#fff)}
+.mlab{display:flex;align-items:center;gap:.4rem;font-weight:800;min-width:5.6rem;color:var(--dc)}
+.mlab i{width:1rem;height:1rem;border-radius:5px;background:var(--dc)}
+.mnum{width:3rem;height:3rem;border-radius:12px;border:2px solid var(--line);background:#fff;font-family:'Jua';font-size:1.55rem;cursor:pointer;transition:.12s}
+.mnum:hover{border-color:var(--dc);color:var(--dc)}
+.mnum.on{background:var(--dc);border-color:var(--dc);color:#fff;transform:scale(1.08);box-shadow:0 6px 14px color-mix(in srgb,var(--dc) 40%,transparent)}
+.manual-msg{min-height:1.4rem;color:var(--no);font-weight:700;margin-top:.4rem;font-size:.92rem}
+.mrow.ok{background:#effaf5;border-color:#bfe9d6}
+.mrow.ok .mnum:not(.on){opacity:.3}
+.mrow.ok .mnum{pointer-events:none}
+.mrow.bad{background:#fff5f5;border-color:#ffc9c9;animation:shake .45s}
+.mrow .mres{font-weight:900;margin-left:.3rem}
+.tray.count .die .tilt{transform:rotateX(-5deg) rotateY(6deg)}
+.die-slot.counted .die{filter:drop-shadow(0 0 .5rem color-mix(in srgb,var(--ok) 55%,transparent))}
+.tile.typed{border-style:dashed}
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:.55rem}
+.key{height:3.9rem;border-radius:16px;border:1px solid var(--line);background:var(--surface-2);font-family:'Jua';font-size:1.8rem;cursor:pointer;transition:.12s;box-shadow:0 3px 0 #e1e4f0}
+.key:hover{background:var(--primary-soft);color:var(--primary)}
+.key:active{transform:translateY(3px);box-shadow:none}
+.key.ok{grid-column:1/-1;background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;border:0;box-shadow:0 4px 0 #3f3fb8;font-size:1.5rem}
+.key.dim{opacity:.3}
+.disabled .keypad,.disabled .choices,.disabled .text-ans{opacity:.42;pointer-events:none}
+.pad-actions{display:flex;flex-direction:column;gap:.6rem;margin-top:1rem}
+.pad-title{font-weight:800;margin-bottom:.8rem;display:flex;justify-content:space-between;align-items:center}
+.result-card{max-width:760px;margin:0 auto;text-align:center;padding:2.4rem}
+.trophy{font-size:4.5rem;animation:pop .6s}
+.result-card h2{font-size:2.3rem;margin:.4rem 0}
+.stars{font-size:3rem;letter-spacing:.3rem;margin:.4rem 0}
+.stars .off{filter:grayscale(1);opacity:.25}
+.big-score{font-size:4rem;color:var(--primary);line-height:1}
+.big-score small{font-size:1.6rem;color:var(--muted)}
+.review{display:grid;grid-template-columns:repeat(auto-fill,minmax(14rem,1fr));gap:.5rem;margin:1.8rem 0;text-align:left}
+.review div{border:1px solid var(--line);border-radius:12px;padding:.55rem .8rem;background:var(--surface-2);font-weight:700}
+.review .ok{border-color:#bfe9d6;background:#effaf5}
+.review .no{border-color:#ffd4d4;background:#fff5f5}
+.review small{color:var(--muted);font-weight:500}
+
+/* ---------- board ---------- */
+.board-wrap{position:relative}
+.board-wrap svg.path{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:0}
+.board-grid{position:relative;display:grid;gap:.6rem;z-index:1}
+.cell{position:relative;aspect-ratio:1/.9;border-radius:18px;background:#fff;border:2px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:.3rem;text-align:center;min-width:0;transition:transform .15s,box-shadow .15s;font:inherit;color:inherit}
+button.cell{cursor:pointer}
+button.cell:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.cell.selected{outline:4px solid var(--primary);outline-offset:2px}
+.cell .num{position:absolute;top:.25rem;left:.5rem;font-size:.72rem;font-weight:900;color:var(--muted)}
+.cell .ico{font-size:1.55rem;line-height:1.1}
+.cell .lbl{font-size:.74rem;font-weight:800;margin-top:.25rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.cell.t-start{background:linear-gradient(135deg,#5b5bf0,#8a5cf6);color:#fff;border-color:transparent}
+.cell.t-goal{background:linear-gradient(135deg,#f7b32b,#ff7a59);color:#fff;border-color:transparent}
+.cell.t-start .num,.cell.t-goal .num{color:rgba(255,255,255,.8)}
+.cell.t-quiz{background:#eef0ff;border-color:#d3d6ff}
+.cell.t-math{background:#e9f8f3;border-color:#bfead9}
+.cell.t-forward{background:#e8f4ff;border-color:#bcdcfb}
+.cell.t-back{background:#fff0ee;border-color:#ffd0c9}
+.cell.t-rest{background:#f3f1f8;border-color:#ddd8ea}
+.cell.t-again{background:#fff8e2;border-color:#ffe39a}
+.cell.t-normal .ico{color:#c4c8da;font-size:1.1rem}
+.cell .tokens{position:absolute;inset:0;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;align-content:center;gap:2px;pointer-events:none}
+.cell.has-token .ico,.cell.has-token .lbl{opacity:.22}
+.token{width:2.15rem;height:2.15rem;border-radius:50%;background:#fff;border:3px solid var(--pc);display:grid;place-items:center;font-size:1.15rem;box-shadow:0 4px 10px rgba(27,31,59,.25)}
+.token.many{width:1.7rem;height:1.7rem;font-size:.9rem;border-width:2px}
+.token.cur{animation:pulse 1.3s infinite}
+.token.hop{animation:tokenHop .3s ease-out}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--pc) 60%,transparent),0 4px 10px rgba(27,31,59,.25)}50%{box-shadow:0 0 0 7px color-mix(in srgb,var(--pc) 0%,transparent),0 4px 10px rgba(27,31,59,.25)}}
+@keyframes tokenHop{0%{transform:translateY(0)}45%{transform:translateY(-14px) scale(1.12)}100%{transform:translateY(0)}}
+.game-layout{display:grid;grid-template-columns:minmax(0,1fr) 22rem;gap:1.2rem;align-items:start}
+.board-card{padding:1.3rem}
+.side{display:flex;flex-direction:column;gap:1rem;position:sticky;top:5.5rem}
+.turn-card{display:flex;align-items:center;gap:1rem;padding:1.1rem 1.3rem;border:2px solid var(--pc,var(--line));background:color-mix(in srgb,var(--pc,#fff) 8%,#fff)}
+.turn-avatar{width:3.6rem;height:3.6rem;border-radius:50%;display:grid;place-items:center;font-size:2rem;background:#fff;border:3px solid var(--pc);flex:none}
+.turn-name{font-size:1.6rem;line-height:1.2}
+.dice-card{text-align:center}
+.dice-card .tray{--ds:5.2rem;padding:.6rem 0 1.4rem}
+.roll-sum{font-size:1.3rem;color:var(--muted);min-height:1.9rem;margin-bottom:.6rem}
+.roll-sum b{color:var(--coral);font-size:1.8rem;font-weight:400}
+.game-msg{margin-top:.9rem;min-height:3rem;font-weight:700;background:var(--surface-2);border-radius:14px;padding:.7rem .9rem;font-size:.98rem}
+.game-msg.flash{animation:pop .35s}
+.side-title{font-weight:900;margin-bottom:.6rem}
+.plist{display:flex;flex-direction:column;gap:.45rem}
+.prow{display:flex;align-items:center;gap:.6rem;padding:.5rem .7rem;border-radius:14px;border:1px solid var(--line);background:#fff}
+.prow.cur{border:2px solid var(--pc);background:color-mix(in srgb,var(--pc) 7%,#fff)}
+.prow .pe{width:2.1rem;height:2.1rem;border-radius:50%;display:grid;place-items:center;border:3px solid var(--pc);flex:none}
+.prow .pn{font-weight:800;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prow .pp{font-size:.82rem;color:var(--muted);font-weight:700;text-align:right;white-space:nowrap}
+.bar{height:.4rem;background:#eceef6;border-radius:999px;overflow:hidden;margin-top:.25rem}
+.bar i{display:block;height:100%;background:var(--pc);border-radius:999px;transition:width .3s}
+.legend{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:1.2rem}
+.legend span{font-size:.82rem;font-weight:700;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:.3rem .75rem}
+.players-setup{display:grid;grid-template-columns:repeat(auto-fill,minmax(15rem,1fr));gap:.7rem;margin:1rem 0}
+.pset{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:.5rem .6rem;border:2px solid var(--line);border-top:5px solid var(--pc);border-radius:16px;padding:.6rem .75rem;background:#fff}
+.pset .mem{grid-column:1/-1;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;border-top:1px dashed var(--line);padding-top:.5rem}
+.pset .mem .lab{font-weight:800;font-size:.85rem;color:var(--muted)}
+.pset .stepper{border-width:1px;border-radius:12px}
+.pset .stepper button{width:2.1rem;height:2.1rem;font-size:1.1rem}
+.pset .stepper span{min-width:2.6rem;font-size:1.05rem}
+.pset .input.names{flex:1;min-width:8rem;border:1px solid var(--line);border-radius:10px;font-size:.85rem;font-weight:600;padding:.45rem .6rem}
+.turn-member{display:inline-block;margin-top:.2rem;font-weight:800;font-size:.95rem;background:#fff;border:2px solid var(--pc);color:var(--ink);border-radius:999px;padding:.1rem .7rem}
+.pset .emo{width:3rem;height:3rem;border-radius:50%;border:3px solid var(--pc);background:#fff;font-size:1.6rem;cursor:pointer;flex:none;display:grid;place-items:center}
+.pset .input{border:0;padding:.4rem;font-weight:800;font-size:1.1rem}
+.pset .input:focus{box-shadow:none}
+.board-info{margin:.5rem 0 1.2rem;font-weight:700}
+
+/* ---------- editor ---------- */
+.ed-layout{display:grid;grid-template-columns:minmax(0,1fr) 21rem;gap:1.2rem;align-items:start}
+.ed-controls{display:grid;grid-template-columns:repeat(auto-fill,minmax(12rem,1fr));gap:.9rem;margin:1rem 0 1.4rem}
+.ed-controls .box{background:var(--surface-2);border:1px solid var(--line);border-radius:16px;padding:.8rem 1rem}
+.ed-controls .box .lab{font-weight:800;font-size:.88rem;margin-bottom:.4rem}
+.ed-controls .stepper button{width:2.3rem;height:2.3rem;font-size:1.15rem}
+.ed-controls .stepper span{font-size:1.2rem;min-width:2.8rem}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.section-head h2{font-size:1.6rem}
+.sq-editor{position:sticky;top:5.5rem}
+.sq-editor h3{font-size:1.3rem;margin-bottom:.8rem}
+.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.type-grid .chip{text-align:left;display:flex;align-items:center;gap:.4rem;font-size:.92rem}
+.q-form{display:grid;grid-template-columns:2fr 1fr 1.5fr auto;gap:.7rem;align-items:end;margin:1rem 0}
+.q-form label{font-weight:800;font-size:.85rem;display:block;margin-bottom:.3rem}
+.q-list{display:flex;flex-direction:column;gap:.5rem;margin-top:.6rem}
+.q-item{display:grid;grid-template-columns:2.4rem minmax(0,1fr) auto;gap:.8rem;align-items:center;border:1px solid var(--line);border-radius:16px;padding:.7rem .9rem;background:#fff;transition:.15s}
+.q-item:hover{box-shadow:var(--shadow)}
+.q-item.editing{border:2px solid var(--primary);background:var(--primary-soft)}
+.q-no{width:2.2rem;height:2.2rem;border-radius:12px;background:var(--primary-soft);color:var(--primary);display:grid;place-items:center;font-weight:900}
+.q-q{font-weight:800;word-break:keep-all;overflow-wrap:anywhere}
+.q-meta{font-size:.85rem;color:var(--muted);margin-top:.15rem}
+.q-meta b{color:var(--ok)}
+.q-actions{display:flex;gap:.35rem}
+details.bulk{margin-top:1.2rem;border:1px dashed #cfd3e8;border-radius:16px;padding:.8rem 1rem;background:var(--surface-2)}
+details.bulk summary{cursor:pointer;font-weight:800}
+.empty-note{text-align:center;color:var(--muted);padding:2rem;border:2px dashed var(--line);border-radius:16px}
+
+/* ---------- modal ---------- */
+.modal-back{position:fixed;inset:0;background:rgba(18,20,44,.5);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:none;place-items:center;z-index:100;padding:1rem}
+.modal-back.open{display:grid;animation:fadeIn .2s}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{background:#fff;border-radius:30px;width:min(760px,100%);max-height:94vh;overflow:auto;padding:1.8rem 2rem;box-shadow:var(--shadow-lg);animation:pop .35s}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.modal-head h2{font-size:1.7rem}
+.badge{display:inline-flex;align-items:center;gap:.3rem;border-radius:999px;padding:.35rem .9rem;font-weight:900;background:var(--primary-soft);color:var(--primary)}
+.badge.math{background:#e3f7ef;color:#0f8a5c}
+.q-head{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap}
+.q-who{display:flex;align-items:center;gap:.4rem;font-weight:800}
+.q-who .dot{width:.8rem;height:.8rem;border-radius:50%}
+.q-head .icon-btn{margin-left:auto}
+.q-dice{display:flex;justify-content:center;gap:2rem;--ds:4.4rem;padding:1.2rem 0 .6rem}
+.q-dice:empty{display:none}
+.q-text{font-size:2.3rem;text-align:center;margin:1.2rem 0 1.4rem;line-height:1.35;word-break:keep-all}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.choice{display:flex;align-items:center;gap:.7rem;text-align:left;border:2px solid var(--line);background:#fff;border-radius:18px;padding:1rem 1.1rem;font-size:1.3rem;font-weight:800;cursor:pointer;transition:.15s}
+.choice b{width:2rem;height:2rem;border-radius:10px;background:var(--primary-soft);color:var(--primary);display:grid;place-items:center;flex:none;font-size:1rem}
+.choice:hover{border-color:var(--primary);transform:translateY(-2px)}
+.choice.right{border-color:var(--ok);background:#e8f8f1}
+.choice.wrongc{border-color:var(--no);background:#fff0f0}
+.pad-area{display:grid;grid-template-columns:1fr 1.3fr;gap:1.2rem;align-items:center}
+.ans-display{height:6rem;border-radius:22px;border:3px dashed #b9bdf7;display:grid;place-items:center;font-size:3.4rem}
+.ans-display.empty{color:#b9bdf7}
+.text-ans{display:flex;gap:.7rem}
+.q-feedback{min-height:2.8rem;text-align:center;font-family:'Jua';font-size:1.8rem;margin-top:1rem}
+.q-feedback.ok{color:var(--ok);animation:pop .4s} .q-feedback.no{color:var(--no);animation:pop .4s}
+.q-foot{display:flex;justify-content:flex-end;align-items:center;gap:.5rem;border-top:1px solid var(--line);padding-top:1rem;margin-top:.6rem;flex-wrap:wrap}
+.win{text-align:center}
+.win-emoji{font-size:5rem;animation:pop .6s}
+.win h2{font-size:2.4rem;margin:.3rem 0 1rem}
+.rank{display:flex;flex-direction:column;gap:.5rem;margin:0 auto 1.5rem;max-width:26rem}
+.rank div{display:flex;align-items:center;gap:.7rem;border:1px solid var(--line);border-radius:14px;padding:.55rem .9rem;font-weight:800;text-align:left}
+.rank div span:last-child{margin-left:auto;color:var(--muted);font-weight:700}
+.set-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.set-grid .full{grid-column:1/-1}
+.set-label{font-weight:800;font-size:.9rem;margin-bottom:.35rem;display:flex;justify-content:space-between}
+.hint{font-size:.85rem;color:var(--muted);background:var(--surface-2);border-radius:12px;padding:.6rem .8rem;margin-top:.4rem}
+
+.toast{position:fixed;left:50%;bottom:2rem;transform:translateX(-50%) translateY(250%);opacity:0;background:var(--ink);color:#fff;padding:.8rem 1.4rem;border-radius:16px;font-weight:700;z-index:200;transition:.3s;box-shadow:var(--shadow-lg);max-width:90vw}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+/* ---------- worksheet ---------- */
+.sheet-layout{display:grid;grid-template-columns:22rem minmax(0,1fr);gap:1.4rem;align-items:start}
+.sheet-ctrl{position:sticky;top:5.5rem;max-height:calc(100vh - 7rem);overflow:auto}
+.sheet-ctrl .field{margin:1rem 0}
+.sheet-ctrl .switch-row{padding:.55rem .8rem;margin:.35rem 0;font-size:.92rem}
+.sheet-preview{display:flex;flex-direction:column;align-items:center;gap:1.4rem}
+.page{--wa:#5b5bf0;--wb:#8a5cf6;--wsoft:#eeedff;--wtint:#f8f7ff;--wacc:#ff6b5a;--wink:#23264a;
+  position:relative;width:210mm;max-width:100%;min-height:297mm;background:#fff;color:var(--wink);box-shadow:0 10px 40px rgba(27,31,59,.15);border-radius:6px;padding:13mm 12mm 11mm;
+  font-family:'Noto Sans KR',sans-serif;font-size:14px;line-height:1.4;overflow:hidden}
+.page::before{content:'';position:absolute;left:0;right:0;top:0;height:7px;background:linear-gradient(90deg,var(--wa),var(--wb),var(--wacc))}
+.theme-ocean{--wa:#1f7ae0;--wb:#18b8c9;--wsoft:#e1f0fd;--wtint:#f4faff;--wacc:#f5a524}
+.theme-forest{--wa:#129a68;--wb:#6fbf3c;--wsoft:#e0f5ea;--wtint:#f5fbf7;--wacc:#ff8a3d}
+.theme-sunset{--wa:#f0573f;--wb:#f5a524;--wsoft:#ffeee6;--wtint:#fffaf6;--wacc:#7a5cf6}
+.theme-mono{--wa:#222;--wb:#555;--wsoft:#f0f0f0;--wtint:#fafafa;--wacc:#222;--wink:#111}
+.ws-hero{position:relative;display:flex;align-items:center;gap:14px;border-radius:18px;padding:14px 18px;margin-bottom:12px;
+  background:linear-gradient(135deg,var(--wsoft),var(--wtint));border:1.5px solid color-mix(in srgb,var(--wa) 18%,#fff);overflow:hidden}
+.ws-hero::after{content:'';position:absolute;inset:0;background-image:radial-gradient(color-mix(in srgb,var(--wa) 22%,transparent) 1.3px,transparent 1.5px);background-size:13px 13px;
+  -webkit-mask-image:linear-gradient(90deg,transparent 45%,#000);mask-image:linear-gradient(90deg,transparent 45%,#000);pointer-events:none}
+.ws-hero > *{position:relative;z-index:1}
+.ws-hero .txt{flex:1;min-width:0}
+.ws-tag{display:inline-flex;align-items:center;gap:5px;background:var(--wa);color:#fff;font-weight:700;font-size:11px;border-radius:999px;padding:2px 10px;letter-spacing:.02em}
+.ws-title{font-family:'Jua',sans-serif;font-size:30px;line-height:1.15;margin-top:5px;display:inline;background:linear-gradient(transparent 62%,color-mix(in srgb,var(--wacc) 28%,transparent) 62%)}
+.ws-sub{font-size:12.5px;color:#5b6080;margin-top:6px}
+.ws-deco{display:flex;align-items:flex-end;gap:2px;flex:none}
+.ws-deco svg:nth-child(1){transform:rotate(-14deg) translateY(4px)}
+.ws-deco svg:nth-child(2){transform:rotate(9deg) translateY(-8px)}
+.ws-deco svg:nth-child(3){transform:rotate(-4deg)}
+.ws-score{flex:none;width:84px;height:84px;border-radius:50%;background:#fff;border:2.5px dashed var(--wa);display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-weight:700;color:var(--wa);box-shadow:0 0 0 5px #fff}
+.ws-score small{font-size:10.5px;color:#7a7f9c;font-weight:700}
+.ws-score b{font-family:'Jua',sans-serif;font-size:17px;font-weight:400;margin-top:16px}
+.ws-name{display:flex;gap:10px;margin:0 0 6px;flex-wrap:wrap}
+.ws-field{flex:1;min-width:90px;display:flex;align-items:flex-end;gap:6px;border-bottom:1.6px solid color-mix(in srgb,var(--wa) 45%,#bbb);padding:0 2px 3px}
+.ws-field.long{flex:1.6}
+.ws-field span{font-size:11px;font-weight:700;color:#fff;background:var(--wb);border-radius:6px;padding:1px 7px;flex:none}
+.ws-section{display:flex;align-items:center;gap:8px;margin:14px 0 9px;font-family:'Jua',sans-serif;font-size:18px;color:var(--wink)}
+.ws-section .ic{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:linear-gradient(135deg,var(--wa),var(--wb));flex:none}
+.ws-section .ln{flex:1;height:0;border-bottom:2px dotted color-mix(in srgb,var(--wa) 35%,#ccc)}
+.ws-section small{font-family:'Noto Sans KR',sans-serif;font-size:11.5px;color:#7a7f9c;font-weight:500}
+.ws-grid{display:grid;gap:9px 14px}
+.ws-item{position:relative;display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid color-mix(in srgb,var(--wa) 20%,#e6e7ef);border-radius:14px;padding:9px 12px;
+  break-inside:avoid;page-break-inside:avoid}
+.ws-item::after{content:'';position:absolute;right:7px;top:7px;width:13px;height:13px;opacity:.55;
+  background:radial-gradient(circle,var(--wb) 1.6px,transparent 1.9px) 0 0/6.5px 6.5px}
+.ws-no{flex:none;width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,var(--wa),var(--wb));color:#fff;font-weight:800;font-size:12px;display:grid;place-items:center}
+.ws-body{display:flex;flex-direction:column;gap:6px;min-width:0}
+.ws-expr{display:flex;align-items:center;flex-wrap:wrap;gap:5px;font-family:'Jua',sans-serif;font-size:22px;color:var(--wink)}
+.ws-expr svg{display:block;flex:none}
+.ws-op{font-family:'Jua',sans-serif;color:var(--wa);min-width:12px;text-align:center;font-size:1.05em}
+.ws-box{display:inline-block;width:44px;height:31px;border:2px solid var(--wa);background:var(--wtint);border-radius:8px;vertical-align:middle}
+.ws-box.sm{width:30px;height:26px;border-width:1.6px;border-style:dashed;background:#fff}
+.ws-quiz{display:flex;flex-direction:column;gap:8px}
+.ws-quiz .ws-item{align-items:flex-start}
+.ws-q{font-weight:700;font-size:14.5px;padding-right:16px}
+.ws-ch{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:13.5px;margin-top:4px}
+.ws-ch span::first-letter{color:var(--wa)}
+.ws-line{border-bottom:1.6px solid color-mix(in srgb,var(--wa) 40%,#999);width:170px;height:22px;margin-top:4px}
+.ws-foot{display:flex;align-items:center;gap:14px;margin-top:16px;padding-top:12px;border-top:2px dotted color-mix(in srgb,var(--wa) 30%,#ddd)}
+.ws-self{flex:1;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12.5px;font-weight:700;color:#5b6080}
+.ws-self .face{display:flex;align-items:center;gap:4px;border:1.5px solid color-mix(in srgb,var(--wa) 25%,#ddd);border-radius:999px;padding:3px 10px 3px 5px;font-weight:600}
+.ws-self .face i{width:15px;height:15px;border-radius:50%;border:1.6px solid var(--wa);display:inline-block}
+.ws-stamp{flex:none;width:68px;height:68px;border-radius:50%;border:2px dashed var(--wacc);display:grid;place-items:center;text-align:center;font-size:10.5px;font-weight:800;color:var(--wacc);line-height:1.25;transform:rotate(-8deg)}
+.ws-brand{text-align:right;margin-top:10px;font-size:9.5px;color:#a0a4bd;letter-spacing:.04em}
+.ws-key{display:grid;grid-template-columns:repeat(3,1fr);gap:7px 12px;font-size:14px}
+.ws-key div{display:flex;align-items:center;gap:7px;background:var(--wtint);border:1px solid color-mix(in srgb,var(--wa) 15%,#eee);border-radius:10px;padding:5px 9px}
+.ws-key b{flex:none;min-width:22px;height:22px;border-radius:7px;background:var(--wa);color:#fff;font-size:11px;display:grid;place-items:center}
+.ws-key strong{color:var(--wa);font-size:15.5px;margin-left:auto}
+.ws-key.wide{grid-template-columns:1fr!important}
+/* 자동 줄바꾸기: 긴 제목·문제·보기·정답이 칸 밖으로 넘치지 않고 단어 단위로 줄을 바꿈 */
+.ws-inner{width:auto}
+.ws-title,.ws-sub,.ws-q,.ws-ch span,.ws-key div,.ws-field,.ws-self{word-break:keep-all;overflow-wrap:anywhere}
+.ws-key div{flex-wrap:wrap;min-width:0}
+.ws-hero .txt{min-width:0}
+.ws-item,.ws-body{min-width:0}
+.ws-ch span{max-width:100%}
+.theme-swatches{display:flex;gap:.5rem;flex-wrap:wrap}
+.theme-swatches .chip{display:flex;align-items:center;gap:.4rem;padding:.45rem .75rem}
+.theme-swatches .sw{width:1.1rem;height:1.1rem;border-radius:50%;background:linear-gradient(135deg,var(--a),var(--b))}
+@media (max-width:1050px){.sheet-layout{grid-template-columns:1fr}.sheet-ctrl{position:static;max-height:none}.page{min-height:0}}
+@media print{
+  @page{size:A4;margin:11mm}
+  html{font-size:16px}
+  body{background:#fff!important}
+  header.top,.no-print,#toast,#confetti,#dice3d,.modal-back,.view:not(#view-sheet){display:none!important}
+  main{padding:0!important;max-width:none!important}
+  #view-sheet{display:block!important;animation:none!important}
+  .sheet-layout{display:block}
+  .sheet-preview{display:block}
+  .page{width:auto;min-height:0;box-shadow:none;border-radius:0;padding:14px 0 0;margin:0}
+  .page + .page{break-before:page;page-break-before:always}
+  .ws-item{break-inside:avoid}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+/* 3D 물리 주사위 무대 (dice-box-threejs) */
+#dice3d{position:fixed;inset:0;z-index:120;pointer-events:none;opacity:0;transition:opacity .35s;background:radial-gradient(ellipse at center,rgba(18,20,44,.28),rgba(18,20,44,.12) 70%)}
+#dice3d.show{opacity:1}
+#dice3d canvas{width:100%!important;height:100%!important;display:block}
+.credit{text-align:center;color:var(--muted);font-size:.8rem;margin-top:2.5rem}
+.credit a{color:var(--muted)}
+#confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:150}
+
+@media (max-width:1050px){
+  .game-layout,.ed-layout,.play-grid{grid-template-columns:1fr}
+  .side,.sq-editor,.pad-card{position:static}
+  .hero{grid-template-columns:1fr}
+  .feature-grid{grid-template-columns:1fr}
+  .q-form{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  header.top{padding:.6rem 1rem}
+  main{padding:1rem 1rem 3rem}
+  .hero h1{font-size:2.4rem}
+  .card{padding:1.1rem}
+  .setup-card{padding:1.3rem}
+  .choices,.pad-area,.set-grid{grid-template-columns:1fr}
+  .q-text{font-size:1.7rem}
+  .tile{font-size:2.2rem;min-width:3.4rem;height:4rem}
+  .op{font-size:2rem}
+  .modal{padding:1.3rem}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand display" data-go="home"><span class="logo">🎲</span>주사위 수학 놀이터</div>
+  <nav class="tabs" id="tabs">
+    <button data-view="home" class="active">🏠 홈</button>
+    <button data-view="math">➕ 주사위 계산</button>
+    <button data-view="board">🏁 말판 놀이</button>
+    <button data-view="editor">✏️ 말판·문항 편집</button>
+    <button data-view="sheet">🖨️ 학습지</button>
+  </nav>
+  <div class="tools">
+    <div class="zoom" title="글자 크기">
+      <button id="zoomOut" aria-label="글자 작게">가−</button>
+      <span id="zoomVal">100%</span>
+      <button id="zoomIn" aria-label="글자 크게">가+</button>
+    </div>
+    <button class="icon-btn" id="sndBtn" title="효과음 켜기/끄기">🔔</button>
+    <button class="icon-btn" id="voiceBtn" title="칭찬 목소리 켜기/끄기">🗣️</button>
+    <button class="icon-btn" id="setBtn" title="소리·목소리 설정">⚙️</button>
+    <button class="icon-btn" id="fsBtn" title="전체 화면">⛶</button>
+  </div>
+</header>
+
+<main>
+<!-- ================= HOME ================= -->
+<section class="view active" id="view-home">
+  <div class="hero">
+    <div>
+      <span class="eyebrow">🎲 주사위로 배우는 사칙연산</span>
+      <h1 class="display">굴리고, 계산하고,<br><span class="grad">함께 달려요!</span></h1>
+      <p class="lead">주사위 눈으로 덧셈·뺄셈·곱셈·나눗셈 문제를 풀고, 친구들과 말판 놀이로 문제 대결을 펼쳐 보세요. 정답을 맞히면 신나는 칭찬이 쏟아져요!</p>
+      <div class="row">
+        <button class="btn btn-primary btn-xl" data-go="math">➕ 주사위 계산 시작</button>
+        <button class="btn btn-ghost btn-lg" data-go="board">🏁 말판 놀이</button>
+      </div>
+    </div>
+    <div class="hero-dice" id="heroDice" title="눌러서 굴려 보세요!"></div>
+  </div>
+  <div class="feature-grid">
+    <div class="card feature" data-go="math" style="--fc:var(--primary);--fc-soft:#ecebff">
+      <div class="f-ico">🎲</div><h3 class="display">주사위 계산 놀이</h3>
+      <p>주사위를 2개~6개까지 늘리고, 사칙연산과 문제 수를 마음대로 정해요.</p><div class="go">시작하기 →</div>
+    </div>
+    <div class="card feature" data-go="board" style="--fc:var(--coral);--fc-soft:#ffece8">
+      <div class="f-ico">🏁</div><h3 class="display">말판 놀이</h3>
+      <p>최대 6모둠이 주사위를 굴려 말을 움직이고, 칸마다 문제와 이벤트를 만나요.</p><div class="go">게임하기 →</div>
+    </div>
+    <div class="card feature" data-go="editor" style="--fc:var(--mint);--fc-soft:#e3f7ef">
+      <div class="f-ico">✏️</div><h3 class="display">말판·문항 편집</h3>
+      <p>칸 수와 칸 종류를 바꾸고, 우리 반만의 문제를 직접 추가·수정해요.</p><div class="go">편집하기 →</div>
+    </div>
+    <div class="card feature" data-go="sheet" style="--fc:var(--sun);--fc-soft:#fff4dc">
+      <div class="f-ico">🖨️</div><h3 class="display">학습지 만들기</h3>
+      <p>주사위 그림 계산 학습지와 정답지를 만들어 바로 인쇄하거나 PDF로 저장해요.</p><div class="go">만들기 →</div>
+    </div>
+  </div>
+  <div class="tips">
+    <div class="tip">🔍 오른쪽 위 <b>가+</b> 버튼으로 글자를 크게 키울 수 있어요</div>
+    <div class="tip">⚙️ <b>설정</b>에서 칭찬 목소리와 칭찬 문구를 바꿀 수 있어요</div>
+    <div class="tip">⌨️ <b>Space</b> 주사위 굴리기 · <b>숫자키/Enter</b> 정답 입력</div>
+  </div>
+  <p class="credit">3D 주사위: <a href="https://github.com/3d-dice/dice-box-threejs" target="_blank" rel="noopener">3d-dice/dice-box-threejs</a> (MIT License)</p>
+</section>
+
+<!-- ================= MATH ================= -->
+<section class="view" id="view-math">
+  <div id="mathSetup">
+    <div class="card setup-card">
+      <div class="setup-head">
+        <h2 class="display">🎲 주사위 계산 놀이</h2>
+        <p class="muted">주사위를 굴려 나온 눈으로 사칙연산 문제를 풀어요!</p>
+      </div>
+      <div class="field">
+        <div class="field-label">🎲 주사위 개수 · <span class="display" style="font-size:1.4rem;color:var(--primary)" id="mDiceN">2</span>개</div>
+        <div class="dice-preview" id="mDicePreview"></div>
+        <div class="row">
+          <button class="btn btn-ghost" id="mDiceMinus">－ 주사위 빼기</button>
+          <button class="btn btn-primary" id="mDicePlus">＋ 주사위 추가</button>
+          <span class="muted sm">2개 ~ 6개</span>
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">🧮 연산 고르기 <span class="muted sm">(여러 개를 고르면 섞여서 나와요)</span></div>
+        <div class="chips ops" id="mOps">
+          <button class="chip" data-op="+">+<small>덧셈</small></button>
+          <button class="chip" data-op="-">−<small>뺄셈</small></button>
+          <button class="chip" data-op="*">×<small>곱셈</small></button>
+          <button class="chip" data-op="/">÷<small>나눗셈</small></button>
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">🎯 주사위 숫자 정하는 방법</div>
+        <div class="chips" id="mMode">
+          <button class="chip" data-mode="count">🔍 눈을 세어 직접 입력</button>
+          <button class="chip" data-mode="roll">🎲 숫자 자동으로 보여 주기</button>
+        </div>
+        <div class="hint">💡 눈을 세어 직접 입력: 주사위를 굴린 뒤 숫자는 숨겨져요. 학생이 주사위 눈을 세어 숫자를 입력하고, 맞게 세면 식이 완성돼 계산으로 넘어가요.</div>
+      </div>
+      <div class="field">
+        <div class="field-label">📝 문제 수</div>
+        <div class="row">
+          <div class="stepper"><button id="mCntMinus">−</button><span class="display" id="mCnt">10</span><button id="mCntPlus">+</button></div>
+          <div class="chips" id="mCntQuick">
+            <button class="chip" data-n="5">5</button><button class="chip" data-n="10">10</button><button class="chip" data-n="20">20</button><button class="chip" data-n="30">30</button>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">⚙️ 옵션</div>
+        <label class="switch-row"><span>답이 0보다 작은 수(음수)도 나오게 하기</span><input type="checkbox" id="mNeg"><span class="switch"></span></label>
+        <label class="switch-row"><span>문제를 소리로 읽어 주기</span><input type="checkbox" id="mRead"><span class="switch"></span></label>
+        <div class="hint">💡 연산이 섞이면 곱셈·나눗셈을 먼저 계산해요. 나눗셈은 항상 나누어떨어지는 문제만 나와요.</div>
+      </div>
+      <button class="btn btn-primary btn-xl block" id="mStart">🚀 시작하기</button>
+    </div>
+  </div>
+
+  <div id="mathPlay" hidden>
+    <div class="card play-top">
+      <div class="qcount display"><span id="mIdx">1</span><small>/ <span id="mTotal">10</span></small></div>
+      <div class="dots" id="mDots"></div>
+      <div class="score-pill">⭐ <span id="mScore">0</span></div>
+      <button class="btn btn-ghost sm" id="mQuit">그만하기</button>
+    </div>
+    <div class="play-grid">
+      <div class="card stage">
+        <div class="tray" id="mTray"></div>
+        <div class="row center" id="mRollRow">
+          <button class="btn btn-coral btn-xl" id="mRoll">🎲 주사위 굴리기 <kbd>Space</kbd></button>
+        </div>
+        <div class="manual" id="mManual" hidden>
+          <div class="manual-title"><span>🔍 주사위 눈을 세어 숫자를 골라 주세요</span><span class="muted sm">숫자키 1~6 · ⌫ 지우기 · Enter 확인</span></div>
+          <div id="mManualRows"></div>
+          <div class="manual-msg" id="mManualMsg"></div>
+          <div class="row center" style="margin-top:.8rem">
+            <button class="btn btn-primary btn-lg" id="mManualOk">✅ 다 셌어요! 확인</button>
+          </div>
+        </div>
+        <div class="expr" id="mExpr"></div>
+        <div class="feedback" id="mFb"></div>
+      </div>
+      <div class="card pad-card" id="mPadCard">
+        <div class="pad-title"><span>✍️ 정답 입력</span><span class="muted sm">숫자키도 돼요</span></div>
+        <div class="keypad" id="mPad"></div>
+        <div class="pad-actions">
+          <button class="btn btn-primary btn-xl" id="mNext" hidden>다음 문제 ▶</button>
+          <button class="btn btn-ghost" id="mSpeak">🔊 문제 다시 듣기</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="mathResult" hidden>
+    <div class="card result-card">
+      <div class="trophy">🏆</div>
+      <h2 class="display" id="rTitle"></h2>
+      <div class="stars" id="rStars"></div>
+      <div class="big-score display"><span id="rScore"></span><small> / <span id="rTotal"></span></small></div>
+      <div class="review" id="rReview"></div>
+      <div class="row center">
+        <button class="btn btn-primary btn-lg" id="rAgain">🔁 다시 하기</button>
+        <button class="btn btn-ghost btn-lg" id="rSetup">⚙️ 설정 바꾸기</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= BOARD ================= -->
+<section class="view" id="view-board">
+  <div id="boardSetup" class="card setup-card">
+    <div class="setup-head">
+      <h2 class="display">🏁 말판 놀이 준비</h2>
+      <p class="muted">참가 인원(모둠)을 정하고, 이름과 말을 골라 주세요. 말 그림을 누르면 바뀌어요.</p>
+    </div>
+    <div class="field">
+      <div class="field-label">👥 참가자 수</div>
+      <div class="chips" id="pCountChips"></div>
+    </div>
+    <div class="field">
+      <div class="field-label">🙋 모둠별 인원수 <span class="muted sm">(모둠 안에서 한 명씩 돌아가며 주사위를 굴려요)</span></div>
+      <div class="chips" id="pMemChips"></div>
+    </div>
+    <div class="players-setup" id="pSetupList"></div>
+    <div class="board-info muted" id="boardInfo"></div>
+    <div class="row">
+      <button class="btn btn-primary btn-xl" id="gStart">🏁 게임 시작</button>
+      <button class="btn btn-ghost btn-lg" data-go="editor">✏️ 말판·문항 편집</button>
+    </div>
+  </div>
+
+  <div id="boardGame" class="game-layout" hidden>
+    <div class="card board-card">
+      <div class="board-wrap" id="gameBoard"></div>
+      <div class="legend" id="legend"></div>
+    </div>
+    <aside class="side">
+      <div class="card turn-card" id="turnCard">
+        <div class="turn-avatar" id="turnAvatar"></div>
+        <div><div class="muted sm" id="turnSub">지금 차례</div><div class="turn-name display" id="turnName"></div><div class="turn-member" id="turnMember" hidden></div></div>
+      </div>
+      <div class="card dice-card">
+        <div class="tray" id="gTray"></div>
+        <div class="roll-sum display" id="gSum">주사위를 굴려 주세요!</div>
+        <button class="btn btn-coral btn-xl block" id="gRoll">🎲 주사위 굴리기 <kbd>Space</kbd></button>
+        <div class="game-msg" id="gMsg">게임을 시작했어요!</div>
+      </div>
+      <div class="card">
+        <div class="side-title">🏃 참가자</div>
+        <div class="plist" id="gPlayers"></div>
+      </div>
+      <div class="row">
+        <button class="btn btn-ghost" id="gNew">🔄 새 게임</button>
+        <button class="btn btn-ghost" data-go="editor">✏️ 편집</button>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- ================= EDITOR ================= -->
+<section class="view" id="view-editor">
+  <div class="ed-layout">
+    <div class="card">
+      <div class="section-head">
+        <h2 class="display">🗺️ 말판 꾸미기</h2>
+        <div class="row">
+          <button class="btn btn-ghost sm" id="edShuffle">🔀 칸 랜덤 섞기</button>
+          <button class="btn btn-ghost sm" id="edReset">↺ 기본 말판</button>
+        </div>
+      </div>
+      <div class="ed-controls">
+        <div class="box"><div class="lab">칸 수 (출발·도착 포함)</div>
+          <div class="stepper"><button data-ed="count" data-d="-1">−</button><span class="display" id="edCount">30</span><button data-ed="count" data-d="1">+</button></div></div>
+        <div class="box"><div class="lab">주사위 개수</div>
+          <div class="stepper"><button data-ed="dice" data-d="-1">−</button><span class="display" id="edDice">1</span><button data-ed="dice" data-d="1">+</button></div></div>
+        <div class="box"><div class="lab">정답 보너스 (앞으로 칸)</div>
+          <div class="stepper"><button data-ed="bonus" data-d="-1">−</button><span class="display" id="edBonus">1</span><button data-ed="bonus" data-d="1">+</button></div></div>
+        <div class="box"><div class="lab">오답 벌칙 (뒤로 칸)</div>
+          <div class="stepper"><button data-ed="penalty" data-d="-1">−</button><span class="display" id="edPenalty">1</span><button data-ed="penalty" data-d="1">+</button></div></div>
+      </div>
+      <p class="muted sm" style="margin:-.4rem 0 1rem">👆 칸을 눌러 선택한 뒤, 오른쪽에서 칸 종류와 이름을 바꿔 보세요.</p>
+      <div class="board-wrap" id="edBoard"></div>
+    </div>
+    <div class="card sq-editor" id="sqEditor"></div>
+  </div>
+
+  <div class="card" style="margin-top:1.2rem">
+    <div class="section-head">
+      <h2 class="display">❓ 문항 관리 <span class="muted" style="font-size:1rem" id="qCountLbl"></span></h2>
+      <div class="row">
+        <button class="btn btn-ghost sm" id="qExport">⬇️ 내보내기</button>
+        <button class="btn btn-ghost sm" id="qImportBtn">⬆️ 불러오기</button>
+        <input type="file" id="qImport" accept=".json,application/json" hidden>
+        <button class="btn btn-danger sm" id="qResetDef">↺ 기본 문항</button>
+      </div>
+    </div>
+    <p class="muted sm" style="margin:.4rem 0 0">말판의 ❓ 문제 칸에 도착하면 아래 문항 중 하나가 나와요. 🎲 계산 칸은 주사위 계산 문제가 자동으로 나와요.</p>
+    <div class="q-form">
+      <div><label for="qfQ">문제</label><input class="input" id="qfQ" placeholder="예) 1시간은 몇 분일까요?"></div>
+      <div><label for="qfA">정답 <span class="muted">(여러 개는 / 로)</span></label><input class="input" id="qfA" placeholder="예) 60"></div>
+      <div><label for="qfC">보기 <span class="muted">(선택 · 쉼표로 구분)</span></label><input class="input" id="qfC" placeholder="예) 30, 60, 100"></div>
+      <div class="row" style="flex-wrap:nowrap"><button class="btn btn-primary" id="qfAdd">＋ 추가</button><button class="btn btn-ghost" id="qfCancel" hidden>취소</button></div>
+    </div>
+    <div class="q-list" id="qList"></div>
+    <details class="bulk">
+      <summary>📋 여러 문항 한꺼번에 추가하기</summary>
+      <p class="muted sm">한 줄에 한 문항씩 <b>문제 | 정답 | 보기1, 보기2, …</b> 형식으로 적어 주세요. 보기는 생략할 수 있어요.</p>
+      <textarea class="input" id="qBulk" rows="5" placeholder="3 × 7 은 얼마일까요? | 21&#10;가장 작은 수는? | 2 | 9, 5, 2, 7"></textarea>
+      <div class="row" style="margin-top:.6rem"><button class="btn btn-primary sm" id="qBulkAdd">한꺼번에 추가</button></div>
+    </details>
+  </div>
+</section>
+
+<!-- ================= WORKSHEET ================= -->
+<section class="view" id="view-sheet">
+  <div class="sheet-layout">
+    <div class="card sheet-ctrl no-print">
+      <h2 class="display">🖨️ 학습지 만들기</h2>
+      <p class="muted sm" style="margin:.3rem 0 0">설정을 바꾸면 오른쪽 미리보기에 바로 반영돼요.</p>
+      <div class="field"><div class="field-label">제목</div><input class="input" id="wsTitle" maxlength="40"></div>
+      <div class="field"><div class="field-label">🔠 학습지 글자 크기 <span class="display" style="color:var(--primary);font-size:1.2rem" id="wsFont">100%</span></div><div class="row"><div class="stepper"><button data-ws="font" data-d="-10" title="글자 작게">−</button><span class="display" id="wsFont2">100</span><button data-ws="font" data-d="10" title="글자 크게">+</button></div><div class="chips" id="wsFontQuick"><button class="chip" data-f="100">보통</button><button class="chip" data-f="130">크게</button><button class="chip" data-f="160">아주 크게</button></div></div><div class="hint">🪄 ‘한 줄에 몇 문제’를 <b>자동</b>으로 두면 글자 크기와 주사위 개수에 맞춰 줄을 알아서 바꿔요.</div></div>
+      <div class="field"><div class="field-label">🎨 색깔 테마</div><div class="theme-swatches" id="wsTheme"></div></div>
+      <div class="field"><div class="field-label">🎲 주사위 개수</div>
+        <div class="stepper"><button data-ws="dice" data-d="-1">−</button><span class="display" id="wsDice">2</span><button data-ws="dice" data-d="1">+</button></div></div>
+      <div class="field"><div class="field-label">🧮 연산</div>
+        <div class="chips" id="wsOps">
+          <button class="chip" data-op="+">+ 덧셈</button><button class="chip" data-op="-">− 뺄셈</button>
+          <button class="chip" data-op="*">× 곱셈</button><button class="chip" data-op="/">÷ 나눗셈</button>
+        </div></div>
+      <div class="field"><div class="field-label">📝 문제 수</div>
+        <div class="row"><div class="stepper"><button data-ws="count" data-d="-2">−</button><span class="display" id="wsCount">20</span><button data-ws="count" data-d="2">+</button></div>
+        <div class="chips" id="wsCountQuick"><button class="chip" data-n="10">10</button><button class="chip" data-n="20">20</button><button class="chip" data-n="30">30</button></div></div></div>
+      <div class="field"><div class="field-label">🧩 문제 모양</div>
+        <div class="chips" id="wsMode">
+          <button class="chip" data-mode="dice">주사위 그림 → 답</button>
+          <button class="chip" data-mode="write">주사위 그림 → 식 쓰기</button>
+          <button class="chip" data-mode="number">숫자 식</button>
+        </div></div>
+      <div class="field"><div class="field-label">📐 한 줄에 몇 문제</div>
+        <div class="chips" id="wsCols"><button class="chip" data-c="0">🪄 자동</button><button class="chip" data-c="1">1단</button><button class="chip" data-c="2">2단</button><button class="chip" data-c="3">3단</button></div></div>
+      <div class="field"><div class="field-label">⚙️ 옵션</div>
+        <label class="switch-row"><span>이름·날짜 칸</span><input type="checkbox" id="wsName"><span class="switch"></span></label>
+        <label class="switch-row"><span>주사위를 여러 색으로 칠하기</span><input type="checkbox" id="wsColor"><span class="switch"></span></label>
+        <label class="switch-row"><span>답이 음수도 나오게</span><input type="checkbox" id="wsNeg"><span class="switch"></span></label>
+        <label class="switch-row"><span>말판 문항도 함께 넣기</span><input type="checkbox" id="wsQuiz"><span class="switch"></span></label>
+        <label class="switch-row"><span>정답지 페이지 함께 출력</span><input type="checkbox" id="wsAns"><span class="switch"></span></label>
+      </div>
+      <div class="row">
+        <button class="btn btn-ghost" id="wsNew">🔀 새 문제로 바꾸기</button>
+        <button class="btn btn-primary btn-lg" id="wsPrint">🖨️ 인쇄 / PDF 저장</button>
+      </div>
+      <div class="hint">💡 PDF로 저장하려면 인쇄 창에서 대상(프린터)을 <b>‘PDF로 저장’</b>으로 고르세요. 용지는 A4에 맞춰져 있어요.</div>
+    </div>
+    <div class="sheet-preview" id="sheetPreview"></div>
+  </div>
+</section>
+</main>
+
+<!-- ================= MODALS ================= -->
+<div class="modal-back" id="qModal">
+  <div class="modal">
+    <div class="q-head">
+      <span class="badge" id="qKind">❓ 문제</span>
+      <span class="q-who" id="qWho"></span>
+      <button class="icon-btn" id="qListen" title="문제 듣기">🔊</button>
+    </div>
+    <div class="q-dice" id="qDice"></div>
+    <div class="q-text display" id="qText"></div>
+    <div id="qBody"></div>
+    <div class="q-feedback" id="qFb"></div>
+    <div class="q-foot">
+      <span class="muted sm">선생님 판정</span>
+      <button class="btn btn-ghost sm" id="qJudgeOk">✔ 정답 인정</button>
+      <button class="btn btn-ghost sm" id="qJudgeNo">✖ 오답 처리</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-back" id="winModal">
+  <div class="modal win">
+    <div class="win-emoji" id="winEmoji">🏆</div>
+    <h2 class="display" id="winTitle"></h2>
+    <div class="rank" id="winRank"></div>
+    <div class="row center">
+      <button class="btn btn-primary btn-lg" id="winAgain">🔁 한 판 더</button>
+      <button class="btn btn-ghost btn-lg" id="winClose">닫기</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-back" id="setModal">
+  <div class="modal">
+    <div class="modal-head"><h2 class="display">⚙️ 소리 · 목소리 설정</h2><button class="icon-btn" id="setClose">✕</button></div>
+    <div class="set-grid">
+      <label class="switch-row"><span>🔔 효과음</span><input type="checkbox" id="sSound"><span class="switch"></span></label>
+      <label class="switch-row"><span>🗣️ 칭찬 목소리</span><input type="checkbox" id="sVoice"><span class="switch"></span></label>
+      <label class="switch-row full"><span>🎲 3D 물리 주사위 (화면 위로 굴러가는 주사위)</span><input type="checkbox" id="s3d"><span class="switch"></span></label>
+      <div><div class="set-label"><span>효과음 크기</span><span id="sVolV"></span></div><input type="range" id="sVol" min="0" max="1" step="0.05"></div>
+      <div><div class="set-label"><span>목소리 빠르기</span><span id="sRateV"></span></div><input type="range" id="sRate" min="0.7" max="1.5" step="0.05"></div>
+      <div><div class="set-label"><span>목소리 높낮이 (높을수록 발랄)</span><span id="sPitchV"></span></div><input type="range" id="sPitch" min="0.6" max="2" step="0.05"></div>
+      <div><div class="set-label"><span>목소리 선택</span></div><select class="input" id="sVoiceSel"></select></div>
+      <div class="full hint" id="voiceHint">💡 Microsoft Edge에서는 ‘SunHi (Natural)’ 같은 자연스러운 한국어 음성을 쓸 수 있어 가장 생생하게 들려요.</div>
+      <div class="full"><div class="set-label"><span>🎉 칭찬 문구 (한 줄에 하나씩)</span></div><textarea class="input" id="sPraise" rows="5"></textarea></div>
+      <div class="full"><div class="set-label"><span>💪 격려 문구 (틀렸을 때, 한 줄에 하나씩)</span></div><textarea class="input" id="sEnc" rows="3"></textarea></div>
+    </div>
+    <div class="row" style="margin-top:1.2rem;justify-content:space-between">
+      <div class="row"><button class="btn btn-coral" id="sTest">🎉 칭찬 들어보기</button><button class="btn btn-ghost" id="sTestSfx">🔔 효과음 들어보기</button></div>
+      <button class="btn btn-ghost" id="sDefault">기본값으로</button>
+    </div>
+  </div>
+</div>
+
+<div id="dice3d" aria-hidden="true"></div>
+<div class="toast" id="toast"></div>
+<canvas id="confetti"></canvas>
+
+<script>
+/* ================= utilities ================= */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const rnd = n => Math.floor(Math.random() * n);
+const pick = arr => arr[rnd(arr.length)];
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fmtNum = n => (n < 0 ? '−' + (-n) : '' + n);
+const store = {
+  get(k, d) { try { const v = localStorage.getItem('dicegame-' + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem('dicegame-' + k, JSON.stringify(v)); } catch (e) {} }
+};
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 2200); }
+function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+/* ================= settings ================= */
+const DEF_PRAISE = [
+  '우와! 정답이에요! 정말 최고예요!',
+  '대단해요! 완벽하게 맞혔어요!',
+  '멋져요! 계산 천재인데요?',
+  '딩동댕! 아주 잘했어요!',
+  '훌륭해요! 이 기세로 쭉쭉 가 볼까요?',
+  '브라보! 실력이 쑥쑥 자라고 있어요!',
+  '정답! 박수! 짝짝짝!',
+  '완벽해요! 오늘 정말 빛나는데요?'
+];
+const DEF_ENC = [
+  '앗, 아까워요! 한 번 더 도전해 볼까요?',
+  '괜찮아요! 천천히 다시 생각해 봐요!',
+  '거의 다 왔어요! 다시 한 번!'
+];
+const DEF_SETTINGS = { scale: 1, sound: true, voice: true, dice3d: true, volume: 0.8, rate: 1.08, pitch: 1.3, voiceName: '', praise: DEF_PRAISE, enc: DEF_ENC };
+let settings = { ...DEF_SETTINGS, ...store.get('settings', {}) };
+const saveSettings = () => store.set('settings', settings);
+
+/* ================= sound (Web Audio) ================= */
+let actx = null;
+function ac() {
+  if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+  if (actx.state === 'suspended') actx.resume();
+  return actx;
+}
+function tone(freq, start, dur, { type = 'sine', gain = 0.25, slideTo = null } = {}) {
+  const c = ac(), t = c.currentTime + start;
+  const o = c.createOscillator(), g = c.createGain();
+  o.type = type; o.frequency.setValueAtTime(freq, t);
+  if (slideTo) o.frequency.exponentialRampToValueAtTime(slideTo, t + dur);
+  const peak = Math.max(0.0002, gain * settings.volume);
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(peak, t + 0.015);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  o.connect(g).connect(c.destination); o.start(t); o.stop(t + dur + 0.05);
+}
+function noise(start, dur, gain = 0.3, freq = 2000) {
+  const c = ac(), t = c.currentTime + start;
+  const len = Math.max(1, Math.floor(c.sampleRate * dur));
+  const buf = c.createBuffer(1, len, c.sampleRate), d = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2);
+  const s = c.createBufferSource(); s.buffer = buf;
+  const f = c.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = freq; f.Q.value = 1.3;
+  const g = c.createGain(); g.gain.value = gain * settings.volume;
+  s.connect(f).connect(g).connect(c.destination); s.start(t);
+}
+const SFX = {
+  click() { tone(700, 0, 0.06, { type: 'triangle', gain: 0.14 }); },
+  roll() {
+    for (let i = 0; i < 10; i++) noise(i * 0.085 + Math.random() * 0.03, 0.06, 0.5, 1400 + Math.random() * 2600);
+    noise(0.9, 0.1, 0.5, 900); noise(1.05, 0.08, 0.35, 1100);
+  },
+  correct() {
+    [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => tone(f, i * 0.08, 0.38, { type: 'triangle', gain: 0.26 }));
+    tone(1568, 0.32, 0.6, { gain: 0.12 }); tone(2093, 0.4, 0.5, { gain: 0.06 });
+  },
+  wrong() { tone(330, 0, 0.18, { type: 'square', gain: 0.07 }); tone(233, 0.17, 0.34, { type: 'square', gain: 0.07 }); },
+  step() { tone(880, 0, 0.06, { type: 'triangle', gain: 0.13 }); tone(1320, 0.02, 0.05, { gain: 0.06 }); },
+  up() { [523, 659, 784, 988, 1175, 1397].forEach((f, i) => tone(f, i * 0.05, 0.16, { gain: 0.17 })); },
+  down() { tone(720, 0, 0.55, { type: 'sawtooth', gain: 0.06, slideTo: 140 }); },
+  rest() { tone(440, 0, 0.35, { gain: 0.14, slideTo: 300 }); tone(330, 0.3, 0.45, { gain: 0.1, slideTo: 220 }); },
+  pop() { tone(500, 0, 0.09, { type: 'sine', gain: 0.18, slideTo: 1100 }); },
+  fanfare() {
+    [[523, 0, .14], [523, .15, .14], [523, .3, .14], [659, .45, .42], [587, .88, .14], [659, 1.03, .14], [784, 1.18, .8]]
+      .forEach(([f, s, d]) => { tone(f, s, d, { type: 'triangle', gain: 0.24 }); tone(f * 2, s, d, { gain: 0.06 }); tone(f / 2, s, d, { type: 'sine', gain: 0.1 }); });
+  }
+};
+function sfx(name) { if (!settings.sound) return; try { SFX[name](); } catch (e) {} }
+
+/* ================= voice (Speech Synthesis) ================= */
+let koVoices = [];
+const hasTTS = 'speechSynthesis' in window;
+function loadVoices() {
+  if (!hasTTS) return;
+  koVoices = speechSynthesis.getVoices().filter(v => /^ko/i.test(v.lang) || /Korean|한국/i.test(v.name));
+  fillVoiceSelect();
+}
+function pickVoice() {
+  if (settings.voiceName) { const v = koVoices.find(v => v.name === settings.voiceName); if (v) return v; }
+  const pref = [/SunHi.*(Natural|Online)/i, /(Natural|Online)/i, /Google/i, /Yuna/i, /Heami/i];
+  for (const p of pref) { const v = koVoices.find(v => p.test(v.name)); if (v) return v; }
+  return koVoices[0] || null;
+}
+function speak(text, opt = {}) {
+  if (!settings.voice || !hasTTS || !text) return Promise.resolve();
+  return new Promise(res => {
+    let done = false; const fin = () => { if (!done) { done = true; res(); } };
+    speechSynthesis.cancel();
+    setTimeout(() => {
+      const u = new SpeechSynthesisUtterance(text);
+      const v = pickVoice();
+      if (v) { u.voice = v; u.lang = v.lang; } else u.lang = 'ko-KR';
+      u.rate = opt.rate ?? settings.rate;
+      u.pitch = clamp(opt.pitch ?? settings.pitch, 0, 2);
+      u.volume = 1;
+      u.onend = fin; u.onerror = fin;
+      speechSynthesis.speak(u);
+      setTimeout(fin, 1500 + text.length * 180);
+    }, 60);
+  });
+}
+const praiseLine = () => pick(settings.praise.length ? settings.praise : DEF_PRAISE);
+const encLine = () => pick(settings.enc.length ? settings.enc : DEF_ENC);
+// 칭찬은 살짝 더 높고 빠르게 → 에너지 있게, 문장부호로 또박또박 끊어 읽기
+const praise = (prefix = '') => speak(prefix + praiseLine(), { pitch: settings.pitch + 0.12, rate: settings.rate + 0.04 });
+const speechify = s => String(s).replace(/×/g, ' 곱하기 ').replace(/÷/g, ' 나누기 ').replace(/\+/g, ' 더하기 ').replace(/−/g, ' 빼기 ').replace(/=/g, ' ').replace(/\s+/g, ' ');
+
+/* ================= confetti ================= */
+const cv = $('#confetti'), cx = cv.getContext('2d');
+let parts = [], confRaf = null;
+const CONF_COLORS = ['#5b5bf0', '#ff6b5a', '#18b89a', '#f5a524', '#e85d9e', '#3a9be8', '#ffd23f'];
+function sizeCanvas() { const d = window.devicePixelRatio || 1; cv.width = innerWidth * d; cv.height = innerHeight * d; cx.setTransform(d, 0, 0, d, 0, 0); }
+function confetti(n = 140) {
+  sizeCanvas();
+  const W = innerWidth, H = innerHeight;
+  for (let i = 0; i < n; i++) {
+    const side = Math.random() < .5;
+    parts.push({ x: side ? W * 0.15 : W * 0.85, y: H * 0.55, vx: (side ? 1 : -1) * (4 + Math.random() * 10), vy: -(9 + Math.random() * 13),
+      s: 6 + Math.random() * 8, c: pick(CONF_COLORS), r: Math.random() * 6, vr: (Math.random() - .5) * .35, circle: Math.random() < .25 });
+  }
+  if (!confRaf) confLoop();
+}
+function confLoop() {
+  cx.clearRect(0, 0, innerWidth, innerHeight);
+  parts.forEach(p => {
+    p.vy += 0.38; p.vx *= 0.985; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+    cx.save(); cx.translate(p.x, p.y); cx.rotate(p.r); cx.fillStyle = p.c;
+    if (p.circle) { cx.beginPath(); cx.arc(0, 0, p.s / 2.4, 0, 7); cx.fill(); } else cx.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2);
+    cx.restore();
+  });
+  parts = parts.filter(p => p.y < innerHeight + 40);
+  if (parts.length) confRaf = requestAnimationFrame(confLoop); else { confRaf = null; cx.clearRect(0, 0, innerWidth, innerHeight); }
+}
+
+/* ================= dice ================= */
+const DICE_COLORS = ['#5b5bf0', '#ff6b5a', '#18b89a', '#f5a524', '#e85d9e', '#3a9be8'];
+const PIPS = { 1: [5], 2: [3, 7], 3: [3, 5, 7], 4: [1, 3, 7, 9], 5: [1, 3, 5, 7, 9], 6: [1, 3, 4, 6, 7, 9] };
+const FACE_ROT = { 1: [0, 0], 2: [-90, 0], 3: [0, -90], 4: [0, 90], 5: [90, 0], 6: [0, 180] };
+const pipsHTML = v => Array.from({ length: 9 }, (_, i) => `<i class="${PIPS[v].includes(i + 1) ? 'on' : ''}"></i>`).join('');
+function makeDie(color, v = 1) {
+  const el = document.createElement('div');
+  el.className = 'die'; el.style.setProperty('--dc', color);
+  el.innerHTML = `<div class="shadow"></div><div class="tilt"><div class="cube">${[1, 2, 3, 4, 5, 6].map(f => `<div class="face f${f}">${pipsHTML(f)}</div>`).join('')}</div></div>`;
+  el._r = 0; setDieStatic(el, v);
+  return el;
+}
+function setDieStatic(el, v) {
+  const cube = el.querySelector('.cube'), [x, y] = FACE_ROT[v];
+  cube.style.transition = 'none'; el._r = 0;
+  cube.style.transform = `rotateX(${x}deg) rotateY(${y}deg)`;
+  void cube.offsetWidth; cube.style.transition = '';
+  el.dataset.v = v;
+}
+function rollDie(el, v) {
+  el._r = (el._r || 0) + 1;
+  const [x, y] = FACE_ROT[v], k = el._r;
+  el.querySelector('.cube').style.transform = `rotateX(${x + 360 * (2 * k)}deg) rotateY(${y + 360 * (2 * k + 1)}deg)`;
+  el.classList.remove('rolling', 'idle'); void el.offsetWidth; el.classList.add('rolling');
+  el.dataset.v = v;
+}
+
+/* ================= 3D physics dice (GitHub: 3d-dice/dice-box-threejs, MIT) =================
+   - 결과를 미리 정해서 굴릴 수 있어(예: "3d6@4,2,5") 문제 생성 로직과 그대로 맞물립니다.
+   - 같은 폴더의 vendor 파일을 먼저 쓰고, 안 되면 jsDelivr CDN을 씁니다.
+   - WebGL이 없거나 불러오기에 실패하면 CSS 3D 주사위만으로 자연스럽게 동작합니다. */
+const Dice3D = { box: null, ready: false, loading: null };
+const DICE3D_LOCAL = './vendor/dice-box-threejs/dice-box-threejs.es.js';
+const DICE3D_CDN = 'https://cdn.jsdelivr.net/npm/@3d-dice/dice-box-threejs@0.0.12/dist/dice-box-threejs.es.js';
+function init3D() {
+  if (Dice3D.ready) return Promise.resolve(true);
+  if (Dice3D.loading) return Dice3D.loading;
+  Dice3D.loading = (async () => {
+    try {
+      let mod;
+      try { mod = await import(DICE3D_LOCAL); } catch (e) { mod = await import(DICE3D_CDN); }
+      const DiceBox = mod.default || mod.DiceBox;
+      Dice3D.box = new DiceBox('#dice3d', {
+        assetPath: './vendor/dice-box-threejs/',
+        sounds: false, shadows: true, light_intensity: 0.85, baseScale: 110, strength: 1.3, gravity_multiplier: 400,
+        theme_customColorset: { name: 'classroom', foreground: '#ffffff', background: '#5b5bf0', outline: '#4848d6', texture: 'none', material: 'plastic' }
+      });
+      await Dice3D.box.initialize();
+      Dice3D.ready = true; return true;
+    } catch (e) { console.warn('3D 주사위를 불러오지 못해 CSS 주사위로 진행합니다.', e); return false; }
+  })();
+  return Dice3D.loading;
+}
+async function roll3D(vals) {
+  if (!settings.dice3d) return false;
+  const ok = await Promise.race([init3D(), wait(1800).then(() => false)]);
+  if (!ok || !Dice3D.ready) return false;
+  const el = $('#dice3d');
+  try { Dice3D.box.clearDice(); } catch (e) {}
+  el.classList.add('show');
+  try { await Promise.race([Dice3D.box.roll(`${vals.length}d6@${vals.join(',')}`), wait(6000)]); } catch (e) {}
+  await wait(650);
+  el.classList.remove('show');
+  setTimeout(() => { if (!el.classList.contains('show')) try { Dice3D.box.clearDice(); } catch (e) {} }, 400);
+  return true;
+}
+// CSS 주사위 + 3D 주사위를 함께 굴리고, 둘 다 끝날 때까지 기다림
+async function rollAll(cssDice, vals, use3D = true) {
+  sfx('roll');
+  vals.forEach((v, i) => cssDice[i] && rollDie(cssDice[i], v));
+  await Promise.all([wait(1300), use3D ? roll3D(vals) : null]);
+}
+
+/* ================= arithmetic ================= */
+const OPS = { '+': { s: '+', w: '더하기' }, '-': { s: '−', w: '빼기' }, '*': { s: '×', w: '곱하기' }, '/': { s: '÷', w: '나누기' } };
+function evalExpr(d, o, allowNeg) {
+  let run = 0, sign = 1, cur = d[0];
+  for (let i = 0; i < o.length; i++) {
+    const v = d[i + 1], op = o[i];
+    if (op === '*') cur *= v;
+    else if (op === '/') { if (cur % v !== 0) return null; cur /= v; }
+    else { run += sign * cur; if (!allowNeg && run < 0) return null; sign = op === '+' ? 1 : -1; cur = v; }
+  }
+  run += sign * cur;
+  if (!allowNeg && run < 0) return null;
+  return run;
+}
+function genProblem(n, ops, allowNeg) {
+  ops = ops.length ? ops : ['+'];
+  for (let t = 0; t < 1200; t++) {
+    const d = Array.from({ length: n }, () => 1 + rnd(6));
+    const o = Array.from({ length: n - 1 }, () => pick(ops));
+    if (o.includes('/') && t < 900 && d.some((v, i) => i > 0 && o[i - 1] === '/' && v === 1) && Math.random() < .7) continue; // ÷1은 되도록 피하기
+    const a = evalExpr(d, o, allowNeg);
+    if (a !== null) return { dice: d, ops: o, answer: a };
+  }
+  const d = Array.from({ length: n }, (_, i) => (i ? 1 : 6)), o = Array.from({ length: n - 1 }, () => ops[0]);
+  return { dice: d, ops: o, answer: evalExpr(d, o, true) };
+}
+const exprText = p => p.dice.reduce((s, v, i) => i ? `${s} ${OPS[p.ops[i - 1]].s} ${v}` : `${v}`, '');
+const exprSpeech = p => p.dice.reduce((s, v, i) => i ? `${s} ${OPS[p.ops[i - 1]].w} ${v}` : `${v}`, '');
+
+/* ================= number pad ================= */
+function makePad(root, display, onSubmit, allowNeg = () => true) {
+  let v = '';
+  root.innerHTML = ['7', '8', '9', '4', '5', '6', '1', '2', '3', '−', '0', '⌫']
+    .map(k => `<button class="key${k === '−' && !allowNeg() ? ' dim' : ''}" data-k="${k}">${k}</button>`).join('') +
+    `<button class="key ok" data-k="ok">확인 ✓</button>`;
+  root.onclick = e => { const b = e.target.closest('.key'); if (b) press(b.dataset.k); };
+  function render() { display.textContent = v === '' ? '?' : v.replace('-', '−'); display.classList.toggle('empty', v === ''); }
+  function press(k) {
+    if (root.closest('.disabled')) return;
+    if (k === 'ok') { onSubmit(v); return; }
+    sfx('click');
+    if (k === '⌫') v = v.slice(0, -1);
+    else if (k === '−') { if (!allowNeg()) return; v = v.startsWith('-') ? v.slice(1) : '-' + v; }
+    else if (v.replace('-', '').length < 6) v = (v === '0' ? '' : v === '-0' ? '-' : v) + k;
+    render();
+  }
+  render();
+  return { press, reset() { v = ''; render(); }, get value() { return v; } };
+}
+let mathPad = null, modalPad = null;
+
+/* ================= navigation & zoom ================= */
+let curView = 'home';
+function go(view) {
+  curView = view;
+  $$('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + view));
+  $$('#tabs button').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+  if (view === 'board') renderBoardView();
+  if (view === 'editor') renderEditor();
+  if (view === 'math') renderMathSetup();
+  if (view === 'sheet') renderSheet();
+  try { history.replaceState(null, '', view === 'home' ? location.pathname : '#' + view); } catch (e) {}
+  scrollTo({ top: 0, behavior: 'smooth' });
+}
+document.addEventListener('click', e => {
+  const g = e.target.closest('[data-go]'); if (g) { sfx('click'); go(g.dataset.go); return; }
+  const t = e.target.closest('#tabs button'); if (t) { sfx('click'); go(t.dataset.view); }
+});
+document.addEventListener('pointerup', e => { const b = e.target.closest('button'); if (b && e.pointerType) setTimeout(() => b.blur(), 0); });
+
+function applyScale() {
+  document.documentElement.style.setProperty('--scale', settings.scale);
+  $('#zoomVal').textContent = Math.round(settings.scale * 100) + '%';
+  clearTimeout(applyScale._t); applyScale._t = setTimeout(redrawBoards, 120);
+}
+$('#zoomIn').onclick = () => { settings.scale = clamp(+(settings.scale + 0.1).toFixed(2), 0.8, 2); applyScale(); saveSettings(); sfx('click'); };
+$('#zoomOut').onclick = () => { settings.scale = clamp(+(settings.scale - 0.1).toFixed(2), 0.8, 2); applyScale(); saveSettings(); sfx('click'); };
+function applyToggles() {
+  $('#sndBtn').classList.toggle('off', !settings.sound); $('#sndBtn').textContent = settings.sound ? '🔔' : '🔕';
+  $('#voiceBtn').classList.toggle('off', !settings.voice);
+}
+$('#sndBtn').onclick = () => { settings.sound = !settings.sound; saveSettings(); applyToggles(); sfx('click'); toast(settings.sound ? '🔔 효과음을 켰어요' : '🔕 효과음을 껐어요'); };
+$('#voiceBtn').onclick = () => { settings.voice = !settings.voice; saveSettings(); applyToggles(); if (!settings.voice && hasTTS) speechSynthesis.cancel(); toast(settings.voice ? '🗣️ 칭찬 목소리를 켰어요' : '🤐 칭찬 목소리를 껐어요'); if (settings.voice) speak('목소리 켜졌어요! 신나게 시작해 볼까요?'); };
+$('#fsBtn').onclick = () => { if (!document.fullscreenElement) document.documentElement.requestFullscreen?.(); else document.exitFullscreen?.(); };
+
+/* ================= settings modal ================= */
+function fillVoiceSelect() {
+  const sel = $('#sVoiceSel'); if (!sel) return;
+  sel.innerHTML = `<option value="">자동 선택 (추천)</option>` + koVoices.map(v => `<option value="${esc(v.name)}">${esc(v.name)}</option>`).join('');
+  sel.value = settings.voiceName;
+  if (!hasTTS || !koVoices.length) $('#voiceHint').textContent = '⚠️ 이 브라우저에서 한국어 음성을 찾지 못했어요. Microsoft Edge나 Chrome에서 열면 칭찬 목소리를 들을 수 있어요.';
+}
+function openSettings() {
+  $('#sSound').checked = settings.sound; $('#sVoice').checked = settings.voice; $('#s3d').checked = settings.dice3d;
+  $('#sVol').value = settings.volume; $('#sRate').value = settings.rate; $('#sPitch').value = settings.pitch;
+  $('#sPraise').value = settings.praise.join('\n'); $('#sEnc').value = settings.enc.join('\n');
+  updateSetLabels(); fillVoiceSelect();
+  $('#setModal').classList.add('open');
+}
+function updateSetLabels() {
+  $('#sVolV').textContent = Math.round(settings.volume * 100) + '%';
+  $('#sRateV').textContent = settings.rate.toFixed(2) + '배';
+  $('#sPitchV').textContent = settings.pitch.toFixed(2);
+}
+$('#setBtn').onclick = () => { sfx('click'); openSettings(); };
+$('#setClose').onclick = () => $('#setModal').classList.remove('open');
+$('#setModal').addEventListener('click', e => { if (e.target.id === 'setModal') $('#setModal').classList.remove('open'); });
+$('#sSound').onchange = e => { settings.sound = e.target.checked; saveSettings(); applyToggles(); };
+$('#sVoice').onchange = e => { settings.voice = e.target.checked; saveSettings(); applyToggles(); };
+$('#s3d').onchange = e => { settings.dice3d = e.target.checked; saveSettings(); if (settings.dice3d) init3D(); };
+$('#sVol').oninput = e => { settings.volume = +e.target.value; updateSetLabels(); saveSettings(); };
+$('#sRate').oninput = e => { settings.rate = +e.target.value; updateSetLabels(); saveSettings(); };
+$('#sPitch').oninput = e => { settings.pitch = +e.target.value; updateSetLabels(); saveSettings(); };
+$('#sVoiceSel').onchange = e => { settings.voiceName = e.target.value; saveSettings(); praise(); };
+$('#sPraise').oninput = e => { settings.praise = e.target.value.split('\n').map(s => s.trim()).filter(Boolean); saveSettings(); };
+$('#sEnc').oninput = e => { settings.enc = e.target.value.split('\n').map(s => s.trim()).filter(Boolean); saveSettings(); };
+$('#sTest').onclick = () => { sfx('correct'); confetti(80); const was = settings.voice; settings.voice = true; praise(); settings.voice = was; };
+$('#sTestSfx').onclick = () => { const seq = ['roll', 'correct', 'wrong', 'up', 'down', 'fanfare']; seq.forEach((s, i) => setTimeout(() => sfx(s), i * 1100)); };
+$('#sDefault').onclick = () => { const sc = settings.scale; settings = { ...DEF_SETTINGS, scale: sc }; saveSettings(); applyToggles(); openSettings(); toast('기본값으로 되돌렸어요'); };
+
+/* ================= MATH MODE ================= */
+let mathCfg = { dice: 2, ops: ['+'], count: 10, allowNeg: false, read: true, mode: 'count', ...store.get('math', {}) };
+if (!['count', 'roll'].includes(mathCfg.mode)) mathCfg.mode = 'count';
+const saveMath = () => store.set('math', mathCfg);
+const M = { cur: null, idx: 0, total: 0, score: 0, tries: 0, rolled: false, locked: true, results: [], token: 0, manual: [] };
+
+function renderMathSetup() {
+  if (!$('#mathPlay').hidden || !$('#mathResult').hidden) return;
+  $('#mDiceN').textContent = mathCfg.dice;
+  const pv = $('#mDicePreview');
+  while (pv.children.length < mathCfg.dice) { const i = pv.children.length; pv.appendChild(makeDie(DICE_COLORS[i % 6], 1 + rnd(6))); }
+  while (pv.children.length > mathCfg.dice) pv.lastChild.remove();
+  $('#mDiceMinus').disabled = mathCfg.dice <= 2; $('#mDicePlus').disabled = mathCfg.dice >= 6;
+  $$('#mOps .chip').forEach(c => c.classList.toggle('on', mathCfg.ops.includes(c.dataset.op)));
+  $('#mCnt').textContent = mathCfg.count;
+  $$('#mCntQuick .chip').forEach(c => c.classList.toggle('on', +c.dataset.n === mathCfg.count));
+  $('#mNeg').checked = mathCfg.allowNeg; $('#mRead').checked = mathCfg.read;
+  $$('#mMode .chip').forEach(c => c.classList.toggle('on', c.dataset.mode === mathCfg.mode));
+}
+$('#mMode').onclick = e => { const c = e.target.closest('.chip'); if (!c) return; mathCfg.mode = c.dataset.mode; saveMath(); sfx('click'); renderMathSetup(); };
+$('#mDicePlus').onclick = () => { if (mathCfg.dice < 6) { mathCfg.dice++; saveMath(); sfx('pop'); renderMathSetup(); const pv = $('#mDicePreview').lastChild; rollDie(pv, 1 + rnd(6)); } };
+$('#mDiceMinus').onclick = () => { if (mathCfg.dice > 2) { mathCfg.dice--; saveMath(); sfx('click'); renderMathSetup(); } };
+$('#mOps').onclick = e => {
+  const c = e.target.closest('.chip'); if (!c) return; sfx('click');
+  const op = c.dataset.op, has = mathCfg.ops.includes(op);
+  if (has && mathCfg.ops.length === 1) { toast('연산을 하나 이상 골라 주세요!'); return; }
+  mathCfg.ops = has ? mathCfg.ops.filter(o => o !== op) : [...mathCfg.ops, op];
+  saveMath(); renderMathSetup();
+};
+$('#mCntMinus').onclick = () => { mathCfg.count = clamp(mathCfg.count - 1, 1, 100); saveMath(); sfx('click'); renderMathSetup(); };
+$('#mCntPlus').onclick = () => { mathCfg.count = clamp(mathCfg.count + 1, 1, 100); saveMath(); sfx('click'); renderMathSetup(); };
+$('#mCntQuick').onclick = e => { const c = e.target.closest('.chip'); if (!c) return; mathCfg.count = +c.dataset.n; saveMath(); sfx('click'); renderMathSetup(); };
+$('#mNeg').onchange = e => { mathCfg.allowNeg = e.target.checked; saveMath(); };
+$('#mRead').onchange = e => { mathCfg.read = e.target.checked; saveMath(); };
+$('#mDicePreview').onclick = () => { sfx('roll'); $$('#mDicePreview .die').forEach(d => rollDie(d, 1 + rnd(6))); };
+
+function startMath() {
+  M.token++; M.idx = 0; M.total = mathCfg.count; M.score = 0; M.results = [];
+  $('#mathSetup').hidden = true; $('#mathResult').hidden = true; $('#mathPlay').hidden = false;
+  $('#mTray').innerHTML = '';
+  newMathProblem();
+  speak('좋아요! 주사위 계산 놀이, 시작합니다!');
+}
+function newMathProblem() {
+  M.cur = genProblem(mathCfg.dice, mathCfg.ops, mathCfg.allowNeg);
+  M.tries = 0; M.rolled = false; M.locked = true;
+  renderMathProblem();
+}
+function renderDots() {
+  $('#mDots').innerHTML = Array.from({ length: M.total }, (_, i) => {
+    const r = M.results[i];
+    return `<i class="${r ? (r.ok ? 'ok' : 'no') : i === M.idx ? 'cur' : ''}"></i>`;
+  }).join('');
+}
+function renderMathProblem() {
+  const p = M.cur, n = p.dice.length;
+  $('#mIdx').textContent = M.idx + 1; $('#mTotal').textContent = M.total; $('#mScore').textContent = M.score;
+  renderDots();
+  const tray = $('#mTray');
+  if (tray.children.length !== n) {
+    tray.innerHTML = '';
+    for (let i = 0; i < n; i++) {
+      const slot = document.createElement('div'); slot.className = 'die-slot';
+      slot.appendChild(makeDie(DICE_COLORS[i % 6], 1 + rnd(6)));
+      slot.insertAdjacentHTML('beforeend', '<span class="die-val">?</span>');
+      tray.appendChild(slot);
+    }
+  }
+  tray.style.setProperty('--ds', n <= 2 ? '7.4rem' : n === 3 ? '6.4rem' : n === 4 ? '5.5rem' : '4.6rem');
+  $$('.die', tray).forEach(d => d.classList.add('idle'));
+  $$('.die-val', tray).forEach(v => { v.textContent = '?'; v.classList.remove('show'); });
+  renderExpr(p);
+  $('#mPadCard').classList.add('disabled');
+  $$('.die-slot', tray).forEach(s => s.classList.remove('counted'));
+  tray.classList.toggle('count', mathCfg.mode === 'count');
+  $('#mRollRow').hidden = false; $('#mRoll').disabled = false;
+  $('#mNext').hidden = true;
+  setFb('', '');
+  closeManual();
+}
+function renderExpr(p) {
+  let h = '';
+  p.dice.forEach((d, i) => {
+    if (i) h += `<span class="op">${OPS[p.ops[i - 1]].s}</span>`;
+    h += `<span class="tile num" style="--c:${DICE_COLORS[i % 6]}">?</span>`;
+  });
+  h += `<span class="op">=</span><span class="tile ans empty" id="mAns">?</span>`;
+  $('#mExpr').innerHTML = h;
+  mathPad = makePad($('#mPad'), $('#mAns'), submitMath, () => mathCfg.allowNeg);
+}
+// 주사위 눈이 정해진 뒤: 숫자를 식에 채우고 정답 입력을 연다
+async function revealProblem(tk) {
+  $$('#mTray .die-val').forEach((el, i) => { el.textContent = M.cur.dice[i]; el.classList.add('show'); });
+  const tiles = $$('#mExpr .tile.num');
+  for (let i = 0; i < tiles.length; i++) { tiles[i].textContent = M.cur.dice[i]; tiles[i].classList.add('pop'); sfx('step'); await wait(110); }
+  if (tk !== M.token) return;
+  $('#mRollRow').hidden = true; M.locked = false; $('#mPadCard').classList.remove('disabled');
+  if (mathCfg.read) speak(exprSpeech(M.cur) + '. 답은 무엇일까요?');
+}
+
+/* ----- 굴린 주사위 눈을 세어 직접 입력 ----- */
+function openCount() {
+  const n = M.cur.dice.length;
+  M.manual = Array(n).fill(0); M.countOk = Array(n).fill(false); M.countBad = [];
+  $('#mManual').hidden = false; $('#mManualMsg').textContent = '';
+  renderManual();
+}
+function closeManual() { $('#mManual').hidden = true; }
+const nextCountIdx = () => M.manual.findIndex((v, i) => !v && !M.countOk[i]);
+function renderManual() {
+  const next = nextCountIdx();
+  $('#mManualRows').innerHTML = M.manual.map((v, i) => `
+    <div class="mrow${M.countOk[i] ? ' ok' : M.countBad.includes(i) ? ' bad' : i === next ? ' next' : ''}" style="--dc:${DICE_COLORS[i % 6]}">
+      <span class="mlab"><i></i>주사위 ${i + 1}</span>
+      ${[1, 2, 3, 4, 5, 6].map(k => `<button class="mnum${v === k ? ' on' : ''}" data-d="${i}" data-k="${k}">${k}</button>`).join('')}
+      ${M.countOk[i] ? '<span class="mres" style="color:var(--ok)">✔ 정확해요!</span>' : M.countBad.includes(i) ? '<span class="mres" style="color:var(--no)">다시 세어 봐요</span>' : ''}
+    </div>`).join('');
+}
+function showTypedTile(i) {
+  const t = $$('#mExpr .tile.num')[i]; if (!t) return;
+  const v = M.manual[i];
+  t.textContent = v || '?'; t.classList.toggle('typed', !!v && !M.countOk[i]);
+}
+function setManual(i, k) {
+  if (M.countOk[i]) return;
+  M.manual[i] = k; M.countBad = M.countBad.filter(x => x !== i); sfx('click');
+  showTypedTile(i); $('#mManualMsg').textContent = '';
+  renderManual();
+}
+function manualKey(k) {
+  if (k === 'back') {
+    let i = -1; M.manual.forEach((v, j) => { if (v && !M.countOk[j]) i = j; });
+    if (i < 0) return;
+    M.manual[i] = 0; showTypedTile(i); renderManual(); return;
+  }
+  const i = nextCountIdx(); if (i >= 0) setManual(i, k);
+}
+async function confirmManual() {
+  if (!M.rolled || $('#mManual').hidden) return;
+  if (M.manual.some((v, i) => !v && !M.countOk[i])) { $('#mManualMsg').textContent = '모든 주사위의 눈을 세어 숫자를 골라 주세요!'; sfx('wrong'); return; }
+  const tk = M.token, bad = [];
+  M.manual.forEach((v, i) => {
+    if (M.countOk[i]) return;
+    if (v === M.cur.dice[i]) {
+      M.countOk[i] = true;
+      const t = $$('#mExpr .tile.num')[i]; t.classList.remove('typed'); t.classList.remove('pop'); void t.offsetWidth; t.classList.add('pop');
+      const val = $$('#mTray .die-val')[i]; val.textContent = v; val.classList.add('show');
+      $$('#mTray .die-slot')[i].classList.add('counted');
+    } else { bad.push(i); M.manual[i] = 0; showTypedTile(i); }
+  });
+  M.countBad = bad; renderManual();
+  if (bad.length) {
+    sfx('wrong');
+    const names = bad.map(i => `${i + 1}번`).join(', ');
+    $('#mManualMsg').textContent = `🔍 주사위 ${names}의 눈을 다시 한 번 천천히 세어 볼까요?`;
+    speak(`앗! 주사위 ${names}을 다시 한 번 세어 봐요!`);
+    return;
+  }
+  sfx('up');
+  $('#mManualMsg').textContent = '';
+  await Promise.race([speak('정확하게 셌어요! 이제 계산해 볼까요?', { pitch: settings.pitch + 0.1 }), wait(2600)]);
+  if (tk !== M.token) return;
+  closeManual();
+  await revealProblem(tk);
+}
+$('#mManualOk').onclick = confirmManual;
+$('#mManualRows').onclick = e => { const b = e.target.closest('.mnum'); if (b) setManual(+b.dataset.d, +b.dataset.k); };
+function setFb(text, cls) { const f = $('#mFb'); f.textContent = text; f.className = 'feedback ' + cls; }
+async function rollMath() {
+  if (!M.cur || M.rolled) return;
+  const tk = M.token, count = mathCfg.mode === 'count';
+  M.rolled = true; $('#mRoll').disabled = true;
+  closeManual();
+  // 눈 세기 모드에서는 숫자가 적힌 3D 주사위를 쓰지 않고 점(눈) 주사위만 굴린다
+  await rollAll($$('#mTray .die'), M.cur.dice, !count);
+  if (tk !== M.token) return;
+  if (count) {
+    $('#mRollRow').hidden = true;
+    openCount();
+    speak('주사위 눈을 세어서 숫자를 골라 주세요!');
+    return;
+  }
+  await revealProblem(tk);
+}
+function submitMath(v) {
+  if (M.locked || v === '' || v === '-') return;
+  const n = parseInt(v, 10), tile = $('#mAns');
+  if (n === M.cur.answer) {
+    M.locked = true;
+    const first = M.tries === 0; if (first) M.score++;
+    M.results.push({ p: M.cur, given: n, ok: first });
+    tile.classList.add('right'); $('#mPadCard').classList.add('disabled');
+    setFb(first ? '정답! 🎉 최고예요!' : '정답! 두 번째에 성공! 👍', 'ok');
+    sfx('correct'); confetti(first ? 150 : 70); praise();
+    $('#mScore').textContent = M.score; renderDots(); showNext();
+  } else {
+    M.tries++; sfx('wrong');
+    tile.classList.remove('shake'); void tile.offsetWidth; tile.classList.add('shake');
+    if (M.tries < 2) {
+      setFb('앗, 다시 한 번 생각해 볼까요? 🤔', 'no'); speak(encLine());
+      setTimeout(() => { if (!M.locked) mathPad.reset(); }, 550);
+    } else {
+      M.locked = true; M.results.push({ p: M.cur, given: n, ok: false });
+      setTimeout(() => { tile.textContent = fmtNum(M.cur.answer); tile.classList.add('reveal'); }, 400);
+      setFb(`정답은 ${fmtNum(M.cur.answer)} 이에요. 다음엔 꼭 맞혀 봐요! 💪`, 'no');
+      speak(`정답은 ${M.cur.answer}! 괜찮아요, 다음 문제에서 멋지게 맞혀 봐요!`);
+      $('#mPadCard').classList.add('disabled'); renderDots(); showNext();
+    }
+  }
+}
+function showNext() {
+  const b = $('#mNext'); b.hidden = false;
+  b.textContent = M.idx >= M.total - 1 ? '결과 보기 🏆' : '다음 문제 ▶';
+}
+function nextMath() {
+  sfx('click');
+  M.idx++;
+  if (M.idx >= M.total) showMathResult(); else newMathProblem();
+}
+function showMathResult() {
+  $('#mathPlay').hidden = true; $('#mathResult').hidden = false;
+  const pct = M.score / M.total, stars = pct >= .9 ? 3 : pct >= .7 ? 2 : pct >= .4 ? 1 : 0;
+  const titles = ['도전 정신 최고예요!', '좋아요! 조금만 더 힘내요!', '아주 잘했어요!', '완벽해요! 계산 천재!'];
+  $('#rTitle').textContent = titles[stars];
+  $('#rStars').innerHTML = [0, 1, 2].map(i => `<span class="${i < stars ? '' : 'off'}">⭐</span>`).join('');
+  $('#rScore').textContent = M.score; $('#rTotal').textContent = M.total;
+  $('#rReview').innerHTML = M.results.map((r, i) => `<div class="${r.ok ? 'ok' : 'no'}">${r.ok ? '✅' : '❌'} ${i + 1}. ${esc(exprText(r.p))} = ${fmtNum(r.p.answer)}${r.ok ? '' : `<br><small>내가 쓴 답: ${fmtNum(r.given)}</small>`}</div>`).join('');
+  sfx('fanfare'); confetti(260);
+  setTimeout(() => speak(`모두 끝! ${M.total}문제 중에 ${M.score}문제를 맞혔어요! ${stars === 3 ? '정말 완벽해요! 최고!' : '정말 잘했어요! 박수!'}`, { pitch: settings.pitch + 0.1 }), 900);
+}
+$('#mStart').onclick = () => { sfx('click'); startMath(); };
+$('#mRoll').onclick = rollMath;
+$('#mNext').onclick = nextMath;
+$('#mSpeak').onclick = () => { if (M.cur && M.rolled) speak(exprSpeech(M.cur) + '. 답은 무엇일까요?'); else speak('먼저 주사위를 굴려 주세요!'); };
+$('#mQuit').onclick = () => { if (!confirm('지금까지 푼 문제를 그만할까요?')) return; M.token++; $('#mathPlay').hidden = true; $('#mathSetup').hidden = false; if (hasTTS) speechSynthesis.cancel(); renderMathSetup(); };
+$('#rAgain').onclick = () => { sfx('click'); startMath(); };
+$('#rSetup').onclick = () => { sfx('click'); $('#mathResult').hidden = true; $('#mathSetup').hidden = false; renderMathSetup(); };
+
+/* ================= BOARD DATA ================= */
+const TYPES = {
+  start: { ico: '🚩', name: '출발' }, goal: { ico: '🏆', name: '도착' }, normal: { ico: '●', name: '빈 칸' },
+  quiz: { ico: '❓', name: '문제' }, math: { ico: '🎲', name: '계산 문제' }, forward: { ico: '🚀', name: '앞으로' },
+  back: { ico: '🐢', name: '뒤로' }, rest: { ico: '💤', name: '한 번 쉬기' }, again: { ico: '⭐', name: '한 번 더' }
+};
+const EDIT_TYPES = ['normal', 'quiz', 'math', 'forward', 'back', 'rest', 'again'];
+const PATTERN = ['normal', 'quiz', 'math', 'forward', 'normal', 'quiz', 'back', 'math', 'rest', 'quiz', 'normal', 'again', 'math', 'quiz', 'back', 'normal', 'forward', 'math'];
+const makeSquare = type => ({ type, value: type === 'forward' || type === 'back' ? 2 : 0, label: '' });
+function defaultBoard(n = 30) {
+  const s = [makeSquare('start')];
+  for (let i = 1; i < n - 1; i++) s.push(makeSquare(PATTERN[(i - 1) % PATTERN.length]));
+  s.push(makeSquare('goal'));
+  return { squares: s, diceCount: 1, bonus: 1, penalty: 1 };
+}
+function sqLabel(sq) {
+  if (sq.label) return sq.label;
+  if (sq.type === 'forward') return `앞으로 ${sq.value}칸`;
+  if (sq.type === 'back') return `뒤로 ${sq.value}칸`;
+  if (sq.type === 'normal') return '';
+  return TYPES[sq.type].name;
+}
+const DEFAULT_Q = [
+  { q: '1시간은 몇 분일까요?', a: '60', choices: [] },
+  { q: '삼각형의 꼭짓점은 모두 몇 개일까요?', a: '3', choices: [] },
+  { q: '7 × 8 은 얼마일까요?', a: '56', choices: [] },
+  { q: '100에서 25를 빼면 얼마일까요?', a: '75', choices: [] },
+  { q: '주사위에서 마주 보는 두 면의 눈을 더하면 항상 얼마일까요?', a: '7', choices: [] },
+  { q: '24를 똑같이 4묶음으로 나누면 한 묶음은 몇 개일까요?', a: '6', choices: [] },
+  { q: '다음 중 가장 큰 수는?', a: '0.9', choices: ['0.5', '0.09', '0.9', '0.19'] },
+  { q: '1년은 몇 개월일까요?', a: '12', choices: [] },
+  { q: '다음 중 짝수는?', a: '14', choices: ['7', '14', '21', '33'] },
+  { q: '정사각형의 변은 모두 몇 개일까요?', a: '4', choices: [] },
+  { q: '우리나라의 수도는 어디일까요?', a: '서울', choices: ['부산', '서울', '대구', '광주'] },
+  { q: '6 × 6 은 얼마일까요?', a: '36', choices: [] }
+];
+let boardCfg = store.get('board', null);
+if (!boardCfg || !Array.isArray(boardCfg.squares) || boardCfg.squares.length < 4) boardCfg = defaultBoard(30);
+let questions = store.get('questions', null) || DEFAULT_Q.map(q => ({ ...q, choices: [...q.choices] }));
+const saveBoard = () => store.set('board', boardCfg);
+const saveQ = () => store.set('questions', questions);
+
+/* ================= board rendering ================= */
+function boardCols(wrap, n) {
+  const w = wrap.clientWidth || wrap.parentElement.clientWidth || 800;
+  const base = parseFloat(getComputedStyle(document.documentElement).fontSize) || 17;
+  const cell = base * 5.4, gap = base * .6;
+  return clamp(Math.floor((w + gap) / (cell + gap)), 3, Math.min(10, n));
+}
+function renderBoard(wrap, squares, opt = {}) {
+  const n = squares.length, cols = boardCols(wrap, n);
+  wrap.innerHTML = `<svg class="path"></svg><div class="board-grid" style="grid-template-columns:repeat(${cols},minmax(0,1fr))"></div>`;
+  const grid = wrap.querySelector('.board-grid');
+  squares.forEach((sq, i) => {
+    const r = Math.floor(i / cols), c = r % 2 === 0 ? i % cols : cols - 1 - (i % cols);
+    const el = document.createElement(opt.onClick ? 'button' : 'div');
+    el.className = `cell t-${sq.type}${opt.selected === i ? ' selected' : ''}`;
+    el.style.gridRow = r + 1; el.style.gridColumn = c + 1; el.dataset.i = i;
+    el.innerHTML = `<span class="num">${i === 0 || i === n - 1 ? '' : i}</span><span class="ico">${TYPES[sq.type].ico}</span><span class="lbl">${esc(sqLabel(sq))}</span><div class="tokens"></div>`;
+    if (opt.onClick) el.onclick = () => opt.onClick(i);
+    grid.appendChild(el);
+  });
+  requestAnimationFrame(() => drawPath(wrap));
+}
+function drawPath(wrap) {
+  const svg = wrap.querySelector('svg.path'); if (!svg) return;
+  const cells = $$('.cell', wrap).sort((a, b) => a.dataset.i - b.dataset.i);
+  const wr = wrap.getBoundingClientRect();
+  if (!wr.width) return;
+  const pts = cells.map(c => { const r = c.getBoundingClientRect(); return `${(r.left + r.width / 2 - wr.left).toFixed(1)},${(r.top + r.height / 2 - wr.top).toFixed(1)}`; }).join(' ');
+  svg.setAttribute('viewBox', `0 0 ${wr.width} ${wr.height}`);
+  svg.innerHTML = `<polyline points="${pts}" fill="none" stroke="#d6d9f3" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline points="${pts}" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="1 11" stroke-linecap="round" stroke-linejoin="round"/>`;
+}
+function redrawBoards() {
+  if (curView === 'board' && G) { renderBoard($('#gameBoard'), boardCfg.squares); renderTokens(); }
+  if (curView === 'editor') renderEdBoard();
+}
+let resizeT; addEventListener('resize', () => { clearTimeout(resizeT); resizeT = setTimeout(redrawBoards, 150); });
+
+/* ================= BOARD GAME ================= */
+const EMOJIS = ['🐰', '🦊', '🐻', '🐼', '🐯', '🐸', '🐧', '🦄', '🐶', '🐱', '🐨', '🐹'];
+const PCOLORS = ['#5b5bf0', '#ff6b5a', '#18b89a', '#f5a524', '#e85d9e', '#3a9be8'];
+let setupPlayers = store.get('players', null) || [{ name: '1모둠', emoji: '🐰' }, { name: '2모둠', emoji: '🦊' }];
+let G = null;
+
+/* ----- 모둠원(인원수) ----- */
+const memberNames = p => String(p.memberNames || '').split(',').map(s => s.trim()).filter(Boolean);
+const memberCount = p => Math.max(1, p.members || 1, memberNames(p).length);
+const memberLabel = p => { const c = memberCount(p); if (c <= 1) return ''; const i = (p.mIdx || 0) % c; return memberNames(p)[i] || `${i + 1}번 친구`; };
+const whoText = p => p.name + (memberLabel(p) ? ' · ' + memberLabel(p) : '');
+const whoSpeech = p => p.name + (memberLabel(p) ? ' ' + memberLabel(p) : '');
+setupPlayers.forEach(p => { if (!p.members) p.members = 4; if (p.memberNames == null) p.memberNames = ''; });
+
+function renderBoardSetup() {
+  $('#pCountChips').innerHTML = [2, 3, 4, 5, 6].map(n => `<button class="chip${setupPlayers.length === n ? ' on' : ''}" data-n="${n}">${n}모둠</button>`).join('');
+  const same = setupPlayers.every(p => memberCount(p) === memberCount(setupPlayers[0])) ? memberCount(setupPlayers[0]) : 0;
+  $('#pMemChips').innerHTML = [1, 2, 3, 4, 5, 6, 8].map(n => `<button class="chip${same === n ? ' on' : ''}" data-m="${n}">${n === 1 ? '개인전(1명)' : `모두 ${n}명`}</button>`).join('');
+  $('#pSetupList').innerHTML = setupPlayers.map((p, i) => `
+    <div class="pset" style="--pc:${PCOLORS[i]}">
+      <button class="emo" data-i="${i}" title="눌러서 말 바꾸기">${p.emoji}</button>
+      <input class="input" data-i="${i}" value="${esc(p.name)}" maxlength="12" aria-label="${i + 1}번 모둠 이름">
+      <div class="mem">
+        <span class="lab">🙋 인원</span>
+        <div class="stepper"><button data-mem="${i}" data-d="-1">−</button><span class="display">${memberCount(p)}명</span><button data-mem="${i}" data-d="1">+</button></div>
+        <input class="input names" data-names="${i}" value="${esc(p.memberNames)}" placeholder="모둠원 이름 (선택, 쉼표로)" aria-label="${i + 1}번 모둠원 이름">
+      </div>
+    </div>`).join('');
+  const qn = boardCfg.squares.filter(s => s.type === 'quiz').length, mn = boardCfg.squares.filter(s => s.type === 'math').length;
+  $('#boardInfo').textContent = `🗺️ 말판 ${boardCfg.squares.length}칸 (❓ 문제 칸 ${qn}개 · 🎲 계산 칸 ${mn}개) · 등록된 문항 ${questions.length}개 · 주사위 ${boardCfg.diceCount}개`;
+}
+$('#pCountChips').onclick = e => {
+  const c = e.target.closest('.chip'); if (!c) return; sfx('click');
+  const n = +c.dataset.n;
+  while (setupPlayers.length < n) { const i = setupPlayers.length; setupPlayers.push({ name: `${i + 1}모둠`, emoji: EMOJIS.find(em => !setupPlayers.some(p => p.emoji === em)) || EMOJIS[i], members: memberCount(setupPlayers[0]), memberNames: '' }); }
+  setupPlayers.length = n; store.set('players', setupPlayers); renderBoardSetup();
+};
+$('#pMemChips').onclick = e => {
+  const c = e.target.closest('.chip'); if (!c) return; sfx('click');
+  const m = +c.dataset.m;
+  setupPlayers.forEach(p => { p.members = m; if (memberNames(p).length > m) p.memberNames = memberNames(p).slice(0, m).join(', '); });
+  store.set('players', setupPlayers); renderBoardSetup();
+};
+$('#pSetupList').addEventListener('click', e => {
+  const s = e.target.closest('[data-mem]');
+  if (s) {
+    sfx('click'); const p = setupPlayers[s.dataset.mem];
+    p.members = clamp(memberCount(p) + +s.dataset.d, 1, 12);
+    if (memberNames(p).length > p.members) p.memberNames = memberNames(p).slice(0, p.members).join(', ');
+    store.set('players', setupPlayers); renderBoardSetup(); return;
+  }
+  const b = e.target.closest('.emo'); if (!b) return; sfx('pop');
+  const p = setupPlayers[b.dataset.i]; let idx = EMOJIS.indexOf(p.emoji);
+  do { idx = (idx + 1) % EMOJIS.length; } while (setupPlayers.some((q, j) => j != b.dataset.i && q.emoji === EMOJIS[idx]));
+  p.emoji = EMOJIS[idx]; b.textContent = p.emoji; store.set('players', setupPlayers);
+});
+$('#pSetupList').addEventListener('input', e => {
+  if (e.target.matches('[data-names]')) {
+    const p = setupPlayers[e.target.dataset.names]; p.memberNames = e.target.value;
+    const n = memberNames(p).length; if (n > (p.members || 1)) p.members = n;
+    e.target.closest('.pset').querySelector('.stepper span').textContent = memberCount(p) + '명';
+    store.set('players', setupPlayers); return;
+  }
+  if (e.target.matches('input[data-i]')) { setupPlayers[e.target.dataset.i].name = e.target.value; store.set('players', setupPlayers); }
+});
+$('#pSetupList').addEventListener('change', e => { if (e.target.matches('[data-names]')) renderBoardSetup(); });
+
+function renderBoardView() {
+  if (!G) { $('#boardSetup').hidden = false; $('#boardGame').hidden = true; renderBoardSetup(); return; }
+  $('#boardSetup').hidden = true; $('#boardGame').hidden = false;
+  const last = boardCfg.squares.length - 1;
+  G.players.forEach(p => p.pos = clamp(p.pos, 0, last));
+  renderBoard($('#gameBoard'), boardCfg.squares);
+  const b = boardCfg;
+  $('#legend').innerHTML = [
+    `❓ 문제 · 맞히면 ⭐+1${b.bonus ? `, 앞으로 ${b.bonus}칸` : ''}${b.penalty ? ` / 틀리면 뒤로 ${b.penalty}칸` : ''}`,
+    '🎲 주사위 계산 문제', '🚀 앞으로 가기', '🐢 뒤로 가기', '💤 한 번 쉬기', '⭐ 한 번 더 굴리기'
+  ].map(t => `<span>${t}</span>`).join('');
+  const tray = $('#gTray');
+  if (tray.children.length !== b.diceCount) { tray.innerHTML = ''; for (let i = 0; i < b.diceCount; i++) tray.appendChild(makeDie(DICE_COLORS[(i + 1) % 6], 1 + rnd(6))); }
+  renderTokens(); updateSide();
+}
+function renderTokens(hopId = null) {
+  const wrap = $('#gameBoard'); if (!G) return;
+  $$('.cell', wrap).forEach(c => { c.classList.remove('has-token'); c.querySelector('.tokens').innerHTML = ''; });
+  const counts = {};
+  G.players.forEach(p => counts[p.pos] = (counts[p.pos] || 0) + 1);
+  G.players.forEach((p, i) => {
+    const cell = wrap.querySelector(`.cell[data-i="${p.pos}"]`); if (!cell) return;
+    cell.classList.add('has-token');
+    const t = document.createElement('div');
+    t.className = `token${counts[p.pos] > 2 ? ' many' : ''}${i === G.turn && !G.over ? ' cur' : ''}${hopId === i ? ' hop' : ''}`;
+    t.style.setProperty('--pc', p.color); t.textContent = p.emoji; t.title = p.name;
+    cell.querySelector('.tokens').appendChild(t);
+  });
+}
+function updateSide() {
+  if (!G) return;
+  const p = G.players[G.turn], last = boardCfg.squares.length - 1;
+  const tc = $('#turnCard'); tc.style.setProperty('--pc', p.color);
+  $('#turnAvatar').textContent = p.emoji; $('#turnName').textContent = p.name;
+  const ml = memberLabel(p), tm = $('#turnMember');
+  tm.hidden = !ml || G.over; tm.textContent = `🙋 ${ml} 차례 (${((p.mIdx || 0) % memberCount(p)) + 1}/${memberCount(p)})`;
+  $('#turnSub').textContent = G.over ? '게임 끝!' : p.skip ? '지금 차례 (💤 쉬는 중)' : '지금 차례';
+  $('#gRoll').disabled = G.busy || G.over;
+  $('#gRoll').innerHTML = p.skip && !G.over ? '💤 쉬고 넘기기' : '🎲 주사위 굴리기 <kbd>Space</kbd>';
+  $('#gPlayers').innerHTML = G.players.map((q, i) => `
+    <div class="prow${i === G.turn ? ' cur' : ''}" style="--pc:${q.color}">
+      <span class="pe">${q.emoji}</span>
+      <div style="flex:1;min-width:0"><div class="pn">${esc(q.name)}${q.skip ? ' 💤' : ''}${memberCount(q) > 1 ? ` <span class="muted sm">· ${memberCount(q)}명</span>` : ''}</div><div class="bar"><i style="width:${(q.pos / last * 100).toFixed(1)}%"></i></div></div>
+      <div class="pp">${q.pos === last ? '🏆 도착' : `${q.pos}칸`}<br>⭐ ${q.stars}</div>
+    </div>`).join('');
+}
+function say(msg) { const m = $('#gMsg'); m.textContent = msg; m.classList.remove('flash'); void m.offsetWidth; m.classList.add('flash'); }
+
+function startGame() {
+  setupPlayers.forEach((p, i) => { if (!p.name.trim()) p.name = `${i + 1}모둠`; });
+  store.set('players', setupPlayers);
+  G = { players: setupPlayers.map((p, i) => ({ ...p, color: PCOLORS[i], pos: 0, stars: 0, skip: 0, mIdx: 0 })), turn: 0, busy: false, over: false, extra: false, used: new Set() };
+  $('#gTray').innerHTML = '';
+  renderBoardView();
+  $('#gSum').innerHTML = '주사위를 굴려 주세요!';
+  say(`🏁 게임 시작! ${G.players[0].emoji} ${whoText(G.players[0])}부터 주사위를 굴려요.`);
+  sfx('fanfare');
+  speak(`말판 놀이 시작! ${whoSpeech(G.players[0])}부터 주사위를 굴려 주세요!`);
+}
+$('#gStart').onclick = startGame;
+$('#gNew').onclick = () => { if (G && !G.over && !confirm('지금 게임을 끝내고 새로 시작할까요?')) return; G = null; renderBoardView(); };
+
+async function moveBy(p, n) {
+  const last = boardCfg.squares.length - 1, dir = Math.sign(n), idx = G.players.indexOf(p);
+  for (let i = 0; i < Math.abs(n); i++) {
+    const np = p.pos + dir; if (np < 0 || np > last) break;
+    p.pos = np; sfx('step'); renderTokens(idx); updateSide();
+    await wait(260);
+  }
+}
+function pickQuestion() {
+  if (!questions.length) return null;
+  if (G.used.size >= questions.length) G.used.clear();
+  let i; do { i = rnd(questions.length); } while (G.used.has(i));
+  G.used.add(i); return questions[i];
+}
+function makeMathQ() {
+  const ops = mathCfg.ops.length ? mathCfg.ops : ['+', '-', '*'];
+  const p = genProblem(2, ops, false);
+  return { q: `${exprText(p)} = ?`, a: String(p.answer), choices: [], dice: p.dice, speech: `${exprSpeech(p)}. 답은 무엇일까요?` };
+}
+async function rollTurn() {
+  if (!G || G.busy || G.over) return;
+  G.busy = true; updateSide();
+  const p = G.players[G.turn], last = boardCfg.squares.length - 1;
+  if (p.skip > 0) {
+    p.skip--; sfx('rest'); say(`💤 ${p.name}은(는) 이번 차례를 쉬어요.`);
+    await speak(`${p.name}, 이번 차례는 쉬어 가요!`); await wait(400);
+    G.busy = false; nextTurn(); return;
+  }
+  const vals = Array.from({ length: boardCfg.diceCount }, () => 1 + rnd(6));
+  $('#gSum').textContent = '데구루루…';
+  await rollAll($$('#gTray .die'), vals);
+  const s = vals.reduce((a, b) => a + b, 0);
+  $('#gSum').innerHTML = vals.length > 1 ? `${vals.join(' + ')} = <b>${s}</b>칸!` : `<b>${s}</b>칸 앞으로!`;
+  say(`${p.emoji} ${whoText(p)}, ${s}칸 이동!`);
+  await moveBy(p, s);
+  if (p.pos >= last) return win(p);
+  await resolveSquare(p);
+  if (G.over) return;
+  if (p.pos >= last) return win(p);
+  G.busy = false;
+  if (G.extra) { G.extra = false; say(`⭐ ${p.name}, 한 번 더 굴려요!`); updateSide(); renderTokens(); return; }
+  nextTurn();
+}
+async function resolveSquare(p) {
+  const sq = boardCfg.squares[p.pos], b = boardCfg;
+  switch (sq.type) {
+    case 'quiz': case 'math': {
+      let q = sq.type === 'quiz' ? pickQuestion() : makeMathQ();
+      let kind = sq.type;
+      if (!q) { q = makeMathQ(); kind = 'math'; }
+      await wait(300);
+      const ok = await askQuestion(q, kind, p);
+      if (ok) {
+        p.stars++; updateSide();
+        if (b.bonus > 0) { say(`⭐ 정답! 보너스로 앞으로 ${b.bonus}칸!`); sfx('up'); await wait(400); await moveBy(p, b.bonus); }
+        else say('⭐ 정답! 별을 하나 받았어요.');
+      } else if (b.penalty > 0) { say(`😢 아쉬워요. 뒤로 ${b.penalty}칸.`); sfx('down'); await wait(400); await moveBy(p, -b.penalty); }
+      else say('😢 아쉬워요! 다음 기회에!');
+      break;
+    }
+    case 'forward':
+      say(`🚀 슝! 앞으로 ${sq.value}칸!`); sfx('up'); speak(`와! 앞으로 ${sq.value}칸! 슝!`); await wait(700); await moveBy(p, sq.value); break;
+    case 'back':
+      say(`🐢 앗! 뒤로 ${sq.value}칸…`); sfx('down'); speak(`앗! 뒤로 ${sq.value}칸!`); await wait(700); await moveBy(p, -sq.value); break;
+    case 'rest':
+      p.skip = 1; say(`💤 ${p.name}, 다음 차례는 한 번 쉬어요.`); sfx('rest'); speak('아이쿠! 다음 차례는 한 번 쉬어 가요!'); await wait(900); break;
+    case 'again':
+      G.extra = true; sfx('up'); speak('와! 한 번 더 굴려요!'); await wait(700); break;
+    default: await wait(250);
+  }
+}
+function nextTurn() {
+  if (!G || G.over) return;
+  const prev = G.players[G.turn];
+  prev.mIdx = ((prev.mIdx || 0) + 1) % memberCount(prev); // 다음에는 그 모둠의 다음 친구가 굴려요
+  G.turn = (G.turn + 1) % G.players.length;
+  const p = G.players[G.turn];
+  say(`${p.emoji} ${whoText(p)}의 차례예요!${p.skip ? ' (이번엔 쉬어요 💤)' : ''}`);
+  updateSide(); renderTokens();
+}
+function win(p) {
+  G.over = true; G.busy = false; updateSide(); renderTokens();
+  sfx('fanfare'); confetti(300); setTimeout(() => confetti(200), 900);
+  const last = boardCfg.squares.length - 1;
+  const ranked = [p, ...G.players.filter(q => q !== p).sort((a, b) => b.pos - a.pos || b.stars - a.stars)];
+  $('#winEmoji').textContent = p.emoji;
+  $('#winTitle').textContent = `${p.name} 우승! 🎉`;
+  $('#winRank').innerHTML = ranked.map((q, i) => `<div style="border-color:${q.color}"><span>${['🥇', '🥈', '🥉'][i] || (i + 1) + '등'}</span><span>${q.emoji} ${esc(q.name)}</span><span>${q.pos === last ? '도착' : q.pos + '칸'} · ⭐${q.stars}</span></div>`).join('');
+  say(`🏆 ${p.name} 도착! 축하해요!`);
+  setTimeout(() => $('#winModal').classList.add('open'), 500);
+  setTimeout(() => speak(`축하합니다! ${p.name}, 우승! 모두 정말 멋졌어요! 박수!`, { pitch: settings.pitch + 0.12 }), 1300);
+}
+$('#gRoll').onclick = rollTurn;
+$('#winClose').onclick = () => $('#winModal').classList.remove('open');
+$('#winAgain').onclick = () => { $('#winModal').classList.remove('open'); startGame(); };
+
+/* ================= question modal ================= */
+const norm = s => String(s).trim().toLowerCase().replace(/\s+/g, '').replace(/−/g, '-');
+const isCorrect = (ans, a) => String(a).split('/').map(norm).filter(Boolean).includes(norm(ans));
+function askQuestion(q, kind, player) {
+  return new Promise(resolve => {
+    const m = $('#qModal'), body = $('#qBody'), fb = $('#qFb');
+    let done = false;
+    const kb = $('#qKind'); kb.textContent = kind === 'math' ? '🎲 계산 문제' : '❓ 문제'; kb.className = 'badge' + (kind === 'math' ? ' math' : '');
+    $('#qWho').innerHTML = player ? `<span class="dot" style="background:${player.color}"></span>${esc(player.emoji + ' ' + whoText(player))}` : '';
+    $('#qText').textContent = q.q;
+    fb.textContent = ''; fb.className = 'q-feedback';
+    const dz = $('#qDice'); dz.innerHTML = '';
+    if (q.dice) { q.dice.forEach((v, i) => { const d = makeDie(DICE_COLORS[i % 6], 1 + rnd(6)); dz.appendChild(d); requestAnimationFrame(() => rollDie(d, v)); }); sfx('roll'); }
+    body.className = '';
+    const answerText = String(q.a).split('/')[0].trim();
+    const finish = async ok => {
+      if (done) return; done = true; body.className = 'disabled'; modalPad = null;
+      if (ok) {
+        fb.textContent = '정답! ⭐ 별 하나 획득!'; fb.className = 'q-feedback ok';
+        sfx('correct'); confetti(110);
+        await Promise.all([praise(player ? whoSpeech(player) + '! ' : ''), wait(1700)]);
+      } else {
+        fb.textContent = `아쉬워요! 정답은 「${answerText}」`; fb.className = 'q-feedback no';
+        sfx('wrong');
+        await Promise.all([speak(`아쉬워요! 정답은, ${answerText}! 다음엔 꼭 맞혀 봐요!`), wait(2300)]);
+      }
+      m.classList.remove('open'); resolve(ok);
+    };
+    const check = ans => { if (done || String(ans).trim() === '' || ans === '-') return; finish(isCorrect(ans, q.a)); };
+    if (q.choices && q.choices.length) {
+      body.innerHTML = `<div class="choices">${q.choices.map((c, i) => `<button class="choice" data-i="${i}"><b>${i + 1}</b>${esc(c)}</button>`).join('')}</div>`;
+      $$('.choice', body).forEach(b => b.onclick = () => {
+        if (done) return;
+        const c = q.choices[b.dataset.i], ok = isCorrect(c, q.a);
+        b.classList.add(ok ? 'right' : 'wrongc');
+        if (!ok) $$('.choice', body).forEach(x => { if (isCorrect(q.choices[x.dataset.i], q.a)) x.classList.add('right'); });
+        check(c);
+      });
+      modalPad = null;
+    } else if (/^-?\d+$/.test(String(q.a).trim())) {
+      body.innerHTML = `<div class="pad-area"><div class="ans-display display empty" id="qAns">?</div><div class="keypad" id="qPad"></div></div>`;
+      modalPad = makePad($('#qPad'), $('#qAns'), check, () => String(q.a).trim().startsWith('-'));
+    } else {
+      body.innerHTML = `<div class="text-ans"><input id="qInput" class="input xl" placeholder="정답을 입력하세요" autocomplete="off"><button class="btn btn-primary btn-lg" id="qSubmit">확인 ✓</button></div>`;
+      const inp = $('#qInput');
+      $('#qSubmit').onclick = () => check(inp.value);
+      inp.onkeydown = e => { if (e.key === 'Enter' && !e.isComposing) check(inp.value); };
+      setTimeout(() => inp.focus(), 150);
+      modalPad = null;
+    }
+    $('#qJudgeOk').onclick = () => finish(true);
+    $('#qJudgeNo').onclick = () => finish(false);
+    $('#qListen').onclick = () => speak(q.speech || speechify(q.q));
+    m.classList.add('open');
+    setTimeout(() => { if (!done) speak((player ? whoSpeech(player) + '! ' : '') + (q.speech || speechify(q.q))); }, q.dice ? 1300 : 350);
+  });
+}
+
+/* ================= EDITOR ================= */
+let edSel = 1, editingQ = -1;
+function renderEditor() {
+  edSel = clamp(edSel, 0, boardCfg.squares.length - 1);
+  $('#edCount').textContent = boardCfg.squares.length;
+  $('#edDice').textContent = boardCfg.diceCount;
+  $('#edBonus').textContent = boardCfg.bonus;
+  $('#edPenalty').textContent = boardCfg.penalty;
+  renderEdBoard(); renderSqEditor(); renderQList();
+}
+function renderEdBoard() {
+  renderBoard($('#edBoard'), boardCfg.squares, { selected: edSel, onClick: i => { edSel = i; sfx('click'); renderEdBoard(); renderSqEditor(); } });
+}
+function renderSqEditor() {
+  const sq = boardCfg.squares[edSel], fixed = sq.type === 'start' || sq.type === 'goal';
+  const el = $('#sqEditor');
+  el.innerHTML = `
+    <h3 class="display">${TYPES[sq.type].ico} ${edSel === 0 ? '출발 칸' : edSel === boardCfg.squares.length - 1 ? '도착 칸' : edSel + '번 칸'} 편집</h3>
+    ${fixed ? `<div class="hint">출발·도착 칸의 종류는 바꿀 수 없어요. 이름만 바꿀 수 있어요.</div>` : `
+    <div class="field" style="margin-top:0"><div class="field-label">칸 종류</div>
+      <div class="type-grid">${EDIT_TYPES.map(t => `<button class="chip${sq.type === t ? ' on' : ''}" data-t="${t}">${TYPES[t].ico} ${TYPES[t].name}</button>`).join('')}</div></div>
+    ${sq.type === 'forward' || sq.type === 'back' ? `
+    <div class="field"><div class="field-label">몇 칸 ${sq.type === 'forward' ? '앞으로' : '뒤로'}?</div>
+      <div class="stepper"><button data-v="-1">−</button><span class="display" id="sqVal">${sq.value}</span><button data-v="1">+</button></div></div>` : ''}`}
+    <div class="field"><div class="field-label">칸 이름 <span class="muted sm">(비우면 기본 이름)</span></div>
+      <input class="input" id="sqLabel" maxlength="14" value="${esc(sq.label)}" placeholder="${esc(sqLabel({ ...sq, label: '' }) || '예) 보물 상자')}"></div>
+    <div class="row">
+      <button class="btn btn-ghost sm" id="sqPrev" ${edSel <= 0 ? 'disabled' : ''}>◀ 이전 칸</button>
+      <button class="btn btn-ghost sm" id="sqNext" ${edSel >= boardCfg.squares.length - 1 ? 'disabled' : ''}>다음 칸 ▶</button>
+    </div>
+    <div class="hint" style="margin-top:1rem">💾 바꾼 내용은 자동으로 저장돼요. 진행 중인 게임에도 바로 반영돼요.</div>`;
+  $$('.type-grid .chip', el).forEach(c => c.onclick = () => {
+    sfx('click'); sq.type = c.dataset.t;
+    if ((sq.type === 'forward' || sq.type === 'back') && !sq.value) sq.value = 2;
+    saveBoard(); renderEdBoard(); renderSqEditor();
+  });
+  $$('[data-v]', el).forEach(b => b.onclick = () => { sq.value = clamp((sq.value || 1) + +b.dataset.v, 1, 10); sfx('click'); saveBoard(); $('#sqVal').textContent = sq.value; renderEdBoard(); });
+  $('#sqLabel').oninput = e => { sq.label = e.target.value.trim(); saveBoard(); renderEdBoard(); };
+  $('#sqPrev').onclick = () => { edSel--; renderEdBoard(); renderSqEditor(); };
+  $('#sqNext').onclick = () => { edSel++; renderEdBoard(); renderSqEditor(); };
+}
+function setBoardCount(n) {
+  n = clamp(n, 6, 60);
+  const sq = boardCfg.squares, inner = sq.slice(1, -1), goal = sq[sq.length - 1];
+  while (inner.length < n - 2) inner.push(makeSquare(PATTERN[inner.length % PATTERN.length]));
+  inner.length = n - 2;
+  boardCfg.squares = [sq[0], ...inner, goal];
+  saveBoard(); renderEditor();
+}
+$$('.ed-controls [data-ed]').forEach(b => b.onclick = () => {
+  sfx('click'); const d = +b.dataset.d, k = b.dataset.ed;
+  if (k === 'count') return setBoardCount(boardCfg.squares.length + d);
+  if (k === 'dice') boardCfg.diceCount = clamp(boardCfg.diceCount + d, 1, 3);
+  if (k === 'bonus') boardCfg.bonus = clamp(boardCfg.bonus + d, 0, 5);
+  if (k === 'penalty') boardCfg.penalty = clamp(boardCfg.penalty + d, 0, 5);
+  saveBoard(); renderEditor();
+});
+$('#edShuffle').onclick = () => { const s = boardCfg.squares, inner = shuffle(s.slice(1, -1)); boardCfg.squares = [s[0], ...inner, s[s.length - 1]]; saveBoard(); sfx('roll'); renderEditor(); toast('🔀 칸을 섞었어요!'); };
+$('#edReset').onclick = () => { if (!confirm('말판을 기본 상태(30칸)로 되돌릴까요?')) return; boardCfg = defaultBoard(30); saveBoard(); edSel = 1; renderEditor(); toast('기본 말판으로 되돌렸어요'); };
+
+function renderQList() {
+  $('#qCountLbl').textContent = `· ${questions.length}개`;
+  const list = $('#qList');
+  if (!questions.length) { list.innerHTML = `<div class="empty-note">아직 문항이 없어요. 위에서 문제를 추가해 주세요!<br><span class="sm">문항이 없으면 ❓ 칸에서도 계산 문제가 나와요.</span></div>`; return; }
+  list.innerHTML = questions.map((q, i) => `
+    <div class="q-item${i === editingQ ? ' editing' : ''}">
+      <div class="q-no">${i + 1}</div>
+      <div><div class="q-q">${esc(q.q)}</div>
+        <div class="q-meta">정답: <b>${esc(q.a)}</b>${q.choices && q.choices.length ? ` · 보기: ${q.choices.map(esc).join(', ')}` : ' · 직접 입력'}</div></div>
+      <div class="q-actions">
+        <button class="icon-btn" data-act="say" data-i="${i}" title="읽어 보기">🔊</button>
+        <button class="icon-btn" data-act="try" data-i="${i}" title="미리 풀어 보기">▶</button>
+        <button class="icon-btn" data-act="edit" data-i="${i}" title="수정">✏️</button>
+        <button class="icon-btn" data-act="del" data-i="${i}" title="삭제">🗑️</button>
+      </div>
+    </div>`).join('');
+}
+$('#qList').onclick = e => {
+  const b = e.target.closest('[data-act]'); if (!b) return;
+  const i = +b.dataset.i, q = questions[i];
+  if (b.dataset.act === 'say') speak(speechify(q.q));
+  if (b.dataset.act === 'try') askQuestion(q, 'quiz', null);
+  if (b.dataset.act === 'del') { if (!confirm(`"${q.q}" 문항을 삭제할까요?`)) return; questions.splice(i, 1); saveQ(); if (editingQ === i) cancelEdit(); else if (editingQ > i) editingQ--; renderQList(); toast('🗑️ 삭제했어요'); }
+  if (b.dataset.act === 'edit') {
+    editingQ = i; $('#qfQ').value = q.q; $('#qfA').value = q.a; $('#qfC').value = (q.choices || []).join(', ');
+    $('#qfAdd').textContent = '💾 저장'; $('#qfCancel').hidden = false; renderQList(); $('#qfQ').focus();
+    $('#qfQ').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+};
+function cancelEdit() { editingQ = -1; $('#qfQ').value = $('#qfA').value = $('#qfC').value = ''; $('#qfAdd').textContent = '＋ 추가'; $('#qfCancel').hidden = true; renderQList(); }
+const parseChoices = s => String(s || '').split(',').map(x => x.trim()).filter(Boolean);
+function submitQForm() {
+  const q = $('#qfQ').value.trim(), a = $('#qfA').value.trim(), choices = parseChoices($('#qfC').value);
+  if (!q || !a) { toast('문제와 정답을 모두 적어 주세요!'); return; }
+  if (choices.length && !choices.some(c => isCorrect(c, a))) { toast('보기 안에 정답이 들어 있어야 해요!'); return; }
+  if (choices.length === 1) { toast('보기는 2개 이상 적어 주세요 (또는 비워 두세요)'); return; }
+  if (editingQ >= 0) { questions[editingQ] = { q, a, choices }; toast('💾 수정했어요'); }
+  else { questions.push({ q, a, choices }); toast('✅ 문항을 추가했어요'); sfx('pop'); }
+  saveQ(); cancelEdit();
+  $('#qList').lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+$('#qfAdd').onclick = submitQForm;
+$('#qfCancel').onclick = cancelEdit;
+['#qfQ', '#qfA', '#qfC'].forEach(s => $(s).addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) submitQForm(); }));
+$('#qBulkAdd').onclick = () => {
+  const lines = $('#qBulk').value.split('\n').map(l => l.trim()).filter(Boolean);
+  let added = 0, skipped = 0;
+  lines.forEach(l => {
+    const [q, a, c] = l.split('|').map(x => (x || '').trim());
+    const choices = parseChoices(c);
+    if (q && a && (!choices.length || choices.some(x => isCorrect(x, a)))) { questions.push({ q, a, choices }); added++; } else skipped++;
+  });
+  saveQ(); renderQList(); if (added) $('#qBulk').value = '';
+  toast(`✅ ${added}개 추가${skipped ? ` · ⚠️ ${skipped}줄은 형식이 맞지 않아 건너뛰었어요` : ''}`);
+};
+$('#qExport').onclick = () => {
+  const blob = new Blob([JSON.stringify({ app: 'dice-math', board: boardCfg, questions }, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = '말판놀이_설정.json'; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000); toast('⬇️ 말판과 문항을 파일로 저장했어요');
+};
+$('#qImportBtn').onclick = () => $('#qImport').click();
+$('#qImport').onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const d = JSON.parse(r.result);
+      if (Array.isArray(d.questions)) questions = d.questions.filter(q => q && q.q && q.a).map(q => ({ q: String(q.q), a: String(q.a), choices: Array.isArray(q.choices) ? q.choices.map(String) : [] }));
+      if (d.board && Array.isArray(d.board.squares) && d.board.squares.length >= 4) {
+        const sq = d.board.squares.filter(s => s && TYPES[s.type]).map(s => ({ type: s.type, value: +s.value || 0, label: String(s.label || '') }));
+        sq[0].type = 'start'; sq[sq.length - 1].type = 'goal';
+        boardCfg = { squares: sq, diceCount: clamp(+d.board.diceCount || 1, 1, 3), bonus: clamp(+d.board.bonus || 0, 0, 5), penalty: clamp(+d.board.penalty || 0, 0, 5) };
+      }
+      saveQ(); saveBoard(); renderEditor(); toast('⬆️ 불러오기 완료!');
+    } catch (err) { toast('⚠️ 파일을 읽을 수 없어요'); }
+    e.target.value = '';
+  };
+  r.readAsText(f);
+};
+$('#qResetDef').onclick = () => { if (!confirm('문항을 기본 문항으로 되돌릴까요? 직접 추가한 문항은 사라져요.')) return; questions = DEFAULT_Q.map(q => ({ ...q, choices: [...q.choices] })); saveQ(); cancelEdit(); toast('기본 문항으로 되돌렸어요'); };
+
+/* ================= WORKSHEET ================= */
+let wsCfg = { title: '주사위 계산 학습지', dice: 2, ops: ['+'], count: 20, mode: 'dice', cols: 0, name: true, color: false, allowNeg: false, quiz: false, answers: true, theme: 'violet', font: 100, ...store.get('sheet', {}) };
+if (!wsCfg.font) wsCfg.font = 100;
+if (!wsCfg.theme) wsCfg.theme = 'violet';
+const saveWs = () => store.set('sheet', wsCfg);
+let wsProblems = [];
+function genSheetProblems() {
+  const seen = new Set(); wsProblems = [];
+  for (let i = 0; i < wsCfg.count; i++) {
+    let p;
+    for (let t = 0; t < 30; t++) { p = genProblem(wsCfg.dice, wsCfg.ops, wsCfg.allowNeg); if (!seen.has(exprText(p))) break; }
+    seen.add(exprText(p)); wsProblems.push(p);
+  }
+}
+const WS_THEMES = {
+  violet: { name: '보라', a: '#5b5bf0', b: '#8a5cf6', acc: '#ff6b5a' },
+  ocean: { name: '바다', a: '#1f7ae0', b: '#18b8c9', acc: '#f5a524' },
+  forest: { name: '숲', a: '#129a68', b: '#6fbf3c', acc: '#ff8a3d' },
+  sunset: { name: '노을', a: '#f0573f', b: '#f5a524', acc: '#7a5cf6' },
+  mono: { name: '흑백', a: '#222222', b: '#555555', acc: '#222222' }
+};
+const DICE_PIPS = { 1: [[50, 50]], 2: [[74, 26], [26, 74]], 3: [[74, 26], [50, 50], [26, 74]], 4: [[26, 26], [74, 26], [26, 74], [74, 74]],
+  5: [[26, 26], [74, 26], [50, 50], [26, 74], [74, 74]], 6: [[26, 24], [74, 24], [26, 50], [74, 50], [26, 76], [74, 76]] };
+// 인쇄용 SVG 주사위: 컬러 주사위면 색이 칠해진 주사위, 아니면 테마 색 테두리의 흰 주사위
+function dieSVG(v, i, size, opt = {}) {
+  const th = WS_THEMES[wsCfg.theme] || WS_THEMES.violet;
+  const solid = opt.fill || (wsCfg.color && wsCfg.theme !== 'mono' ? DICE_COLORS[i % 6] : null);
+  const fill = solid || '#fff', stroke = solid || th.a, pip = solid ? '#fff' : (wsCfg.theme === 'mono' ? '#111' : '#23264a');
+  return `<svg width="${size}" height="${size}" viewBox="0 0 100 100" aria-label="주사위 ${v}"><rect x="4" y="4" width="92" height="92" rx="20" fill="${fill}" stroke="${stroke}" stroke-width="6"/>${solid ? '<rect x="12" y="10" width="76" height="22" rx="11" fill="#fff" opacity=".18"/>' : ''}${DICE_PIPS[v].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="9.5" fill="${pip}"/>`).join('')}</svg>`;
+}
+const ICON_DICE = '<svg width="16" height="16" viewBox="0 0 100 100"><rect x="8" y="8" width="84" height="84" rx="20" fill="none" stroke="#fff" stroke-width="10"/><circle cx="30" cy="30" r="9" fill="#fff"/><circle cx="50" cy="50" r="9" fill="#fff"/><circle cx="70" cy="70" r="9" fill="#fff"/></svg>';
+const ICON_Q = '<svg width="16" height="16" viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="none" stroke="#fff" stroke-width="10"/><path d="M37 40a13 13 0 1 1 18 12c-4 2-5 5-5 9" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round"/><circle cx="50" cy="76" r="6" fill="#fff"/></svg>';
+// 자동 줄바꾸기: 글자 크기·주사위 개수·문제 모양으로 한 문제 칸의 폭을 어림해 한 줄 문제 수를 정한다
+function wsItemWidth(c) {
+  const n = wsCfg.dice, base = { 1: 40, 2: 32, 3: 25 }[c], size = Math.round(base * (n <= 3 ? 1 : n === 4 ? 0.85 : 0.72));
+  let expr;
+  if (wsCfg.mode === 'number') expr = n * 15 + n * 18 + 50;
+  else if (wsCfg.mode === 'dice') expr = n * (size + 5) + (n - 1) * 22 + 22 + 50;
+  else expr = Math.max(n * (size + 11), n * 35 + (n - 1) * 22 + 22 + 50);
+  return 26 + 10 + 26 + 18 + expr;
+}
+function wsAutoCols() {
+  const avail = 700 / (wsCfg.font / 100);
+  for (const c of [3, 2, 1]) if ((avail - (c - 1) * 14) / c >= wsItemWidth(c)) return c;
+  return 1;
+}
+function renderSheet() {
+  if (!wsProblems.length || wsProblems.length !== wsCfg.count || wsProblems[0].dice.length !== wsCfg.dice) genSheetProblems();
+  // controls
+  $('#wsTitle').value = wsCfg.title;
+  $('#wsDice').textContent = wsCfg.dice; $('#wsCount').textContent = wsCfg.count;
+  $$('#wsOps .chip').forEach(c => c.classList.toggle('on', wsCfg.ops.includes(c.dataset.op)));
+  $$('#wsCountQuick .chip').forEach(c => c.classList.toggle('on', +c.dataset.n === wsCfg.count));
+  $$('#wsMode .chip').forEach(c => c.classList.toggle('on', c.dataset.mode === wsCfg.mode));
+  $$('#wsCols .chip').forEach(c => c.classList.toggle('on', +c.dataset.c === wsCfg.cols));
+  $('#wsFont').textContent = wsCfg.font + '%'; $('#wsFont2').textContent = wsCfg.font;
+  $$('#wsFontQuick .chip').forEach(c => c.classList.toggle('on', +c.dataset.f === wsCfg.font));
+  $('#wsTheme').innerHTML = Object.entries(WS_THEMES).map(([k, t]) => `<button class="chip${wsCfg.theme === k ? ' on' : ''}" data-theme="${k}"><span class="sw" style="--a:${t.a};--b:${t.b}"></span>${t.name}</button>`).join('');
+  $('#wsName').checked = wsCfg.name; $('#wsColor').checked = wsCfg.color; $('#wsNeg').checked = wsCfg.allowNeg;
+  $('#wsQuiz').checked = wsCfg.quiz; $('#wsAns').checked = wsCfg.answers;
+
+  const th = WS_THEMES[wsCfg.theme] || WS_THEMES.violet;
+  const n = wsCfg.dice, cols = wsCfg.cols || wsAutoCols(), zf = wsCfg.font / 100;
+  const keyCols = zf >= 1.5 ? 1 : zf >= 1.2 ? 2 : 3;
+  const base = { 1: 40, 2: 32, 3: 25 }[cols], size = Math.round(base * (n <= 3 ? 1 : n === 4 ? 0.85 : 0.72));
+  const opsNames = wsCfg.ops.map(o => OPS[o].s).join(' ');
+  const opsWords = wsCfg.ops.map(o => ({ '+': '덧셈', '-': '뺄셈', '*': '곱셈', '/': '나눗셈' }[o])).join('·');
+  const sub = wsCfg.mode === 'write' ? '주사위 눈을 세어 빈칸에 식을 쓰고, 계산해 보세요.' : wsCfg.mode === 'dice' ? '주사위 눈을 세어 보고, 계산한 답을 네모 칸에 써 보세요.' : '계산해서 답을 네모 칸에 써 보세요.';
+  const order = wsCfg.ops.length > 1 && wsCfg.ops.some(o => o === '*' || o === '/') && wsCfg.ops.some(o => o === '+' || o === '-') ? ' 곱셈·나눗셈을 먼저 계산해요!' : '';
+  const quizList = wsCfg.quiz ? questions : [];
+  const total = wsProblems.length + quizList.length;
+  const title = esc(wsCfg.title || '주사위 계산 학습지');
+  const deco = wsCfg.theme === 'mono'
+    ? [dieSVG(3, 0, 34), dieSVG(5, 1, 42), dieSVG(2, 2, 30)].join('')
+    : [dieSVG(3, 0, 34, { fill: th.a }), dieSVG(5, 1, 42, { fill: th.b }), dieSVG(2, 2, 30, { fill: th.acc })].join('');
+  const item = (p, idx) => {
+    let body;
+    if (wsCfg.mode === 'number') {
+      body = `<div class="ws-expr">${p.dice.map((d, i) => (i ? `<span class="ws-op">${OPS[p.ops[i - 1]].s}</span>` : '') + `<span>${d}</span>`).join('')}<span class="ws-op">=</span><span class="ws-box"></span></div>`;
+    } else {
+      const diceRow = p.dice.map((d, i) => (i ? `<span class="ws-op">${OPS[p.ops[i - 1]].s}</span>` : '') + dieSVG(d, i, size)).join('');
+      if (wsCfg.mode === 'dice') body = `<div class="ws-expr">${diceRow}<span class="ws-op">=</span><span class="ws-box"></span></div>`;
+      else body = `<div class="ws-expr">${p.dice.map((d, i) => dieSVG(d, i, size)).join('<span style="width:6px"></span>')}</div>
+        <div class="ws-expr" style="font-size:18px">${p.dice.map((d, i) => (i ? `<span class="ws-op">${OPS[p.ops[i - 1]].s}</span>` : '') + '<span class="ws-box sm"></span>').join('')}<span class="ws-op">=</span><span class="ws-box"></span></div>`;
+    }
+    return `<div class="ws-item"><span class="ws-no">${idx + 1}</span><div class="ws-body">${body}</div></div>`;
+  };
+  const hero = (tag, ttl, subText, score) => `
+    <div class="ws-hero">
+      <div class="txt"><span class="ws-tag">🎲 ${tag}</span><br><div class="ws-title">${ttl}</div><div class="ws-sub">${subText}</div></div>
+      <div class="ws-deco">${deco}</div>
+      ${score ? `<div class="ws-score"><small>점수</small><b>/ ${total}</b></div>` : ''}
+    </div>`;
+  const nameRow = wsCfg.name ? `<div class="ws-name"><div class="ws-field"><span>날짜</span></div><div class="ws-field"><span>학년 반</span></div><div class="ws-field"><span>번호</span></div><div class="ws-field long"><span>이름</span></div></div>` : '';
+  const section = (icon, text, note = '') => `<div class="ws-section"><span class="ic">${icon}</span>${text}${note ? `<small>${note}</small>` : ''}<span class="ln"></span></div>`;
+  const pageCls = `page theme-${wsCfg.theme}`;
+  let html = `<div class="${pageCls}"><div class="ws-inner" style="zoom:${zf}">
+    ${hero(`주사위 수학 · ${opsWords}`, title, sub + order, true)}
+    ${nameRow}
+    ${section(ICON_DICE, `${quizList.length ? '1. ' : ''}주사위 계산`, `${wsProblems.length}문제 · 연산 ${opsNames}`)}
+    <div class="ws-grid" style="grid-template-columns:repeat(${cols},minmax(0,1fr))">${wsProblems.map(item).join('')}</div>
+    ${quizList.length ? `${section(ICON_Q, '2. 생각해 봐요', `${quizList.length}문제`)}<div class="ws-quiz">${quizList.map((q, i) => `
+      <div class="ws-item"><span class="ws-no">${wsProblems.length + i + 1}</span><div class="ws-body"><div class="ws-q">${esc(q.q)}</div>
+        ${q.choices && q.choices.length ? `<div class="ws-ch">${q.choices.map((c, k) => `<span>${'①②③④⑤⑥⑦⑧⑨⑩'[k] || k + 1 + ')'} ${esc(c)}</span>`).join('')}</div>` : '<div class="ws-line"></div>'}</div></div>`).join('')}</div>` : ''}
+    <div class="ws-foot">
+      <div class="ws-self">오늘의 나는? <span class="face"><i></i>😆 술술 풀었어요</span><span class="face"><i></i>🙂 조금 어려웠어요</span><span class="face"><i></i>🤔 다시 해 볼래요</span></div>
+      <div class="ws-stamp">선생님<br>확인</div>
+    </div>
+    <div class="ws-brand">주사위 수학 놀이터</div></div></div>`;
+  if (wsCfg.answers) {
+    html += `<div class="${pageCls}"><div class="ws-inner" style="zoom:${zf}">
+      ${hero('정답지 · 선생님용', `${title}`, '채점할 때 사용하세요.', false)}
+      ${section(ICON_DICE, '주사위 계산 정답')}
+      <div class="ws-key" style="grid-template-columns:repeat(${keyCols},minmax(0,1fr))">${wsProblems.map((p, i) => `<div><b>${i + 1}</b>${esc(exprText(p))} =<strong>${fmtNum(p.answer)}</strong></div>`).join('')}</div>
+      ${quizList.length ? `${section(ICON_Q, '생각해 봐요 정답')}<div class="ws-key wide">${quizList.map((q, i) => `<div><b>${wsProblems.length + i + 1}</b>${esc(q.q)}<strong>${esc(q.a)}</strong></div>`).join('')}</div>` : ''}
+      <div class="ws-brand">주사위 수학 놀이터</div></div></div>`;
+  }
+  $('#sheetPreview').innerHTML = html;
+}
+$('#wsFontQuick').onclick = e => { const c = e.target.closest('.chip'); if (!c) return; sfx('click'); wsCfg.font = +c.dataset.f; saveWs(); renderSheet(); };
+$('#wsTheme').onclick = e => { const c = e.target.closest('.chip'); if (!c) return; sfx('click'); wsCfg.theme = c.dataset.theme; saveWs(); renderSheet(); };
+$('#wsTitle').oninput = e => { wsCfg.title = e.target.value; saveWs(); renderSheet(); };
+$$('[data-ws]').forEach(b => b.onclick = () => {
+  sfx('click'); const k = b.dataset.ws, d = +b.dataset.d;
+  if (k === 'dice') wsCfg.dice = clamp(wsCfg.dice + d, 2, 6);
+  if (k === 'count') wsCfg.count = clamp(wsCfg.count + d, 2, 60);
+  if (k === 'font') { wsCfg.font = clamp(wsCfg.font + d, 80, 200); saveWs(); renderSheet(); return; }
+  saveWs(); genSheetProblems(); renderSheet();
+});
+$('#wsOps').onclick = e => {
+  const c = e.target.closest('.chip'); if (!c) return; sfx('click');
+  const op = c.dataset.op, has = wsCfg.ops.includes(op);
+  if (has && wsCfg.ops.length === 1) { toast('연산을 하나 이상 골라 주세요!'); return; }
+  wsCfg.ops = has ? wsCfg.ops.filter(o => o !== op) : [...wsCfg.ops, op];
+  saveWs(); genSheetProblems(); renderSheet();
+};
+$('#wsCountQuick').onclick = e => { const c = e.target.closest('.chip'); if (!c) return; wsCfg.count = +c.dataset.n; saveWs(); genSheetProblems(); renderSheet(); };
+$('#wsMode').onclick = e => { const c = e.target.closest('.chip'); if (!c) return; wsCfg.mode = c.dataset.mode; saveWs(); renderSheet(); };
+$('#wsCols').onclick = e => { const c = e.target.closest('.chip'); if (!c) return; wsCfg.cols = +c.dataset.c; saveWs(); renderSheet(); };
+[['#wsName', 'name', false], ['#wsColor', 'color', false], ['#wsNeg', 'allowNeg', true], ['#wsQuiz', 'quiz', false], ['#wsAns', 'answers', false]].forEach(([s, k, regen]) => {
+  $(s).onchange = e => { wsCfg[k] = e.target.checked; saveWs(); if (regen) genSheetProblems(); renderSheet(); };
+});
+$('#wsNew').onclick = () => { sfx('roll'); genSheetProblems(); renderSheet(); toast('🔀 새 문제로 바꿨어요'); };
+$('#wsPrint').onclick = () => { renderSheet(); setTimeout(() => window.print(), 100); };
+
+/* ================= keyboard ================= */
+document.addEventListener('keydown', e => {
+  const tag = (e.target.tagName || '').toLowerCase();
+  if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+  const qOpen = $('#qModal').classList.contains('open');
+  const mathOn = curView === 'math' && !$('#mathPlay').hidden;
+  if (mathOn && !qOpen && !$('#mManual').hidden) {
+    if (/^[1-6]$/.test(e.key)) { manualKey(+e.key); e.preventDefault(); return; }
+    if (e.key === 'Backspace') { manualKey('back'); e.preventDefault(); return; }
+    if (e.key === 'Enter') { confirmManual(); e.preventDefault(); return; }
+  }
+  const pad = qOpen ? modalPad : mathOn ? mathPad : null;
+  if (pad && /^[0-9]$/.test(e.key)) { pad.press(e.key); e.preventDefault(); return; }
+  if (pad && e.key === 'Backspace') { pad.press('⌫'); e.preventDefault(); return; }
+  if (pad && e.key === '-') { pad.press('−'); e.preventDefault(); return; }
+  if (e.key === 'Enter') {
+    if (qOpen) { if (modalPad) { modalPad.press('ok'); e.preventDefault(); } }
+    else if (mathOn) { e.preventDefault(); if (!$('#mNext').hidden) nextMath(); else if (!M.rolled) rollMath(); else mathPad?.press('ok'); }
+    return;
+  }
+  if (e.key === ' ') {
+    if (qOpen || $('#winModal').classList.contains('open') || $('#setModal').classList.contains('open')) return;
+    if (mathOn) { e.preventDefault(); rollMath(); }
+    else if (curView === 'board' && G) { e.preventDefault(); rollTurn(); }
+  }
+  if (e.key === 'Escape') { $('#setModal').classList.remove('open'); $('#winModal').classList.remove('open'); }
+});
+
+/* ================= home hero ================= */
+const hero = $('#heroDice');
+const heroDice = [0, 1, 2].map(i => { const d = makeDie(DICE_COLORS[i], 1 + rnd(6)); hero.appendChild(d); return d; });
+function rollHero(withSound) { if (withSound) sfx('roll'); heroDice.forEach((d, i) => setTimeout(() => rollDie(d, 1 + rnd(6)), i * 120)); }
+hero.onclick = () => { const v = heroDice.map(() => 1 + rnd(6)); rollAll(heroDice, v); };
+setInterval(() => { if (curView === 'home' && !document.hidden) rollHero(false); }, 4200);
+setTimeout(() => rollHero(false), 400);
+
+/* ================= init ================= */
+if (hasTTS) { loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
+applyScale(); applyToggles(); renderMathSetup();
+document.addEventListener('pointerdown', () => { try { ac(); } catch (e) {} }, { once: true });
+setTimeout(() => { if (settings.dice3d) init3D(); }, 800);
+{ const h = location.hash.slice(1); if (['math', 'board', 'editor', 'sheet'].includes(h)) go(h); }
+</script>
+</body>
+</html>
